@@ -5,14 +5,20 @@ import 'package:notflix/model/movie.dart';
 
 // 18361ad82497ec1cf55ca10b74f1d3750'; <- This is a dummy key
 class APIRunner {
-  final String api_key = 'api_key=YOUR_KEY';
+  final String api_key = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NmQ4OGZkYzE0ZmMxMDdjNzQxZTYyNGFiYTNjYWMzYiIsIm5iZiI6MTc1NzM1NjMyMS41OTEsInN1YiI6IjY4YmYyMTIxZDliZTBjZGYzNjk4YzlhNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fl3rvzIwWU87nda24DWaLeIUPYiUBCgzBhENIKipeEY';
   final String urlBase = 'https://api.themoviedb.org/3';
   final String apiUpcoming = '/movie/upcoming?';
   final String apiSearch = '/search/movie?';
   final String urlLanguage = '&language=en-US';
 
   Future<List?> runAPI(API) async {
-    http.Response result = await http.get(Uri.parse(API));
+    http.Response result = await http.get(
+      Uri.parse(API),
+      headers: {
+        'Authorization': 'Bearer ' + api_key,
+        'Accept': 'application/json',
+      },
+    );
     if (result.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(result.body);
       final moviesMap = jsonResponse['results'];
@@ -36,14 +42,13 @@ class APIRunner {
   }
 
   Future<List?> getUpcoming() async {
-    final String upcomingAPI = urlBase + apiUpcoming + api_key + urlLanguage;
+    final String upcomingAPI = urlBase + apiUpcoming + urlLanguage;
     return runAPI(upcomingAPI);
   }
 
   Future<List?> searchMovie(String title) async {
     final String search =
-        urlBase + apiSearch + 'query=' + title + '&' + api_key;
-    ;
+        urlBase + apiSearch + 'query=' + title;
     return runAPI(search);
   }
 }
