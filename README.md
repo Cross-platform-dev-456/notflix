@@ -21,3 +21,19 @@ Make it look and behave like Netflix (no games though)
 1. Home screen
 2. Search screen
 3. Details screen
+
+# Screenshots
+
+Below are screenshots of the references:
+
+## Home Screen
+![Home](./_reference_images/home.png)
+![Home Alt](./_reference_images/home-2.png)
+
+## Search Screen
+![Search](./_reference_images/search.png)
+![Search Alt](./_reference_images/search-2.png)
+
+## Details Screen
+![Details](./_reference_images/details.png)
+![Details Alt](./_reference_images/details-2.png)
