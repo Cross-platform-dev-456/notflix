@@ -21,6 +21,7 @@ Make it look and behave like Netflix (no games though)
 1. Home screen
 2. Search screen
 3. Details screen
+4. Watch later screen
 
 # Screenshots
 
