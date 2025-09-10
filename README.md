@@ -14,3 +14,10 @@ A few resources to get you started if this is your first Flutter project:
 For help getting started with Flutter development, view the
 [online documentation](https://docs.flutter.dev/), which offers tutorials,
 samples, guidance on mobile development, and a full API reference.
+
+
+# Requirements and goals
+Make it look and behave like Netflix (no games though)
+1. Home screen
+2. Search screen
+3. Details screen
