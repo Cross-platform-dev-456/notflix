@@ -27,13 +27,13 @@ Make it look and behave like Netflix (no games though)
 Below are screenshots of the references:
 
 ## Home Screen
-<img src="./_reference_images/home.png" alt="Home" height="200" />
-<img src="./_reference_images/home-2.png" alt="Home Alt" height="200" />
+<img src="./_reference_images/home.png" alt="Home" height="400" />
+<img src="./_reference_images/home-2.png" alt="Home Alt" height="400" />
 
 ## Search Screen
-<img src="./_reference_images/search.png" alt="Search" height="200" />
-<img src="./_reference_images/search-2.png" alt="Search Alt" height="200" />
+<img src="./_reference_images/search.png" alt="Search" height="400" />
+<img src="./_reference_images/search-2.png" alt="Search Alt" height="400" />
 
 ## Details Screen
-<img src="./_reference_images/details.png" alt="Details" height="200" />
-<img src="./_reference_images/details-2.png" alt="Details Alt" height="200" />
+<img src="./_reference_images/details.png" alt="Details" height="400" />
+<img src="./_reference_images/details-2.png" alt="Details Alt" height="400" />
