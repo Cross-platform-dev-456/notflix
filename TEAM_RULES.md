@@ -8,7 +8,7 @@
 
 ## 2. Meetings
 
-* Weekly team meeting will be held on **Mondays at 3:50** (on Zoom or in-person).
+* Weekly team meeting will be held on **Mondays at 3:50** (Zoom or in-person).
 * All members must submit their weekly progress **24 hours before** the meeting.
 * If you cannot attend, notify the leader and team **at least 24 hours in advance**.
 
@@ -21,18 +21,25 @@
 ## 4. GitHub Rules
 
 * We will use **one shared repo**: \[GitHub Repo Link].
-* Workflow:
+* **Workflow**:
 
-  1. Fork → make changes → open a pull request (PR).
-  2. At least **one reviewer** (peer or leader) must approve before merging.
-  3. No direct commits to `main` without review.
+  1. Create a new branch for each feature or bugfix (`feature/login`, `fix/auth-header`, etc.).
+  2. Push changes to your branch and open a **pull request (PR)**.
+  3. At least **one reviewer** (peer or leader) must approve before merging.
+  4. No direct commits to `main` without review.
 * PR descriptions must explain the purpose of the change and reference the requirement/feature it addresses.
 
 ## 5. Documentation
 
+* All documentation will be placed in the `docs/` folder at the root of the repo.
 * Use **Markdown** for all documents.
+* **Required docs**:
+
+  * User Manual (Marp → PDF)
+  * Architecture/Design Doc (Marp → PDF)
+  * Weekly Progress Reports (Markdown)
 * Weekly progress reports will be compiled by the leader and published on GitHub & Canvas.
-* Members must document their own contributions in the repo (code comments, README updates, or progress notes).
+* Members must document their own contributions (code comments, updates in `docs/`, or progress notes).
 
 ## 6. Deadlines & Accountability
 
