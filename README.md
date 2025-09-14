@@ -19,9 +19,22 @@ samples, guidance on mobile development, and a full API reference.
 # Requirements and goals
 Make it look and behave like Netflix (no games though)
 1. Home screen
-2. Search screen
-3. Details screen
-4. Watch later screen
+   - horizontal scroll that displays movie covers
+   - rows labeled by genre
+   - 'hero' movie at top, is bigger that the rest
+   - be able to select tv shows, movies, or category to display different data
+3. Search screen
+   - display reccommneded TV Shows & Movies with blank search
+   - display movie covers in grid once user types in search
+5. Details screen
+   - display movie image at top
+      - Stretch goal to play trailer
+   - description underneath
+   - list of episodes, with there title, description
+   - season selector to display episodes of another season
+7. Watch later screen
+   - display covers of movies saved to watch later
+   - have section for watched/continue watching
 
 # Screenshots
 
