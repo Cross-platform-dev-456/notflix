@@ -4,6 +4,8 @@ import 'package:notflix/view/movie_list.dart';
 void main() => runApp(MyMovies());
 
 class MyMovies extends StatelessWidget {
+  const MyMovies({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

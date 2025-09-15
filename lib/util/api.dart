@@ -15,7 +15,7 @@ class APIRunner {
     http.Response result = await http.get(
       Uri.parse(API),
       headers: {
-        'Authorization': 'Bearer ' + api_key,
+        'Authorization': 'Bearer $api_key',
         'Accept': 'application/json',
       },
     );
@@ -48,7 +48,7 @@ class APIRunner {
 
   Future<List?> searchMovie(String title) async {
     final String search =
-        urlBase + apiSearch + 'query=' + title;
+        '$urlBase${apiSearch}query=$title';
     return runAPI(search);
   }
 }

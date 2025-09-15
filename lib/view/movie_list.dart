@@ -3,6 +3,8 @@ import 'package:notflix/util/api.dart';
 import 'movie_detail.dart';
 
 class MovieList extends StatefulWidget {
+  const MovieList({super.key});
+
   @override
   _MovieListState createState() => _MovieListState();
 }
@@ -36,9 +38,9 @@ class _MovieListState extends State<MovieList> {
           onPressed: () {
             setState(
               () {
-                if (this.visibleIcon.icon == Icons.search) {
-                  this.visibleIcon = Icon(Icons.cancel);
-                  this.searchBar = TextField(
+                if (visibleIcon.icon == Icons.search) {
+                  visibleIcon = Icon(Icons.cancel);
+                  searchBar = TextField(
                     textInputAction: TextInputAction.search,
                     onSubmitted: (String text) {
                       search(text);
@@ -49,8 +51,8 @@ class _MovieListState extends State<MovieList> {
                     ),
                   );
                 } else {
-                  this.visibleIcon = Icon(Icons.search);
-                  this.searchBar = Text('Movies');
+                  visibleIcon = Icon(Icons.search);
+                  searchBar = Text('Movies');
                 }
               },
             );
@@ -58,7 +60,7 @@ class _MovieListState extends State<MovieList> {
         ),
       ]),
       body: ListView.builder(
-        itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
+        itemCount: (moviesCount == null) ? 0 : moviesCount,
         itemBuilder: (BuildContext context, int position) {
           if (movies?[position].posterPath != null) {
             image = NetworkImage(iconBase + movies?[position].posterPath);
@@ -78,10 +80,8 @@ class _MovieListState extends State<MovieList> {
                 backgroundImage: image,
               ),
               title: Text(movies?[position].title),
-              subtitle: Text('Released: ' +
-                  movies?[position].releaseDate +
-                  ' - Vote: ' +
-                  movies![position].voteAverage.toString()),
+              subtitle: Text('${'Released: ' +
+                  movies?[position].releaseDate} - Vote: ${movies![position].voteAverage}'),
             ),
           );
         },
