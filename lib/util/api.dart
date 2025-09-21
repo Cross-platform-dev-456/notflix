@@ -55,13 +55,14 @@ class APIRunner {
     return runAPI(search);
   }
 
-  // This is for recommended based on the selected movie - when 
+  // This is for recommended based on the selected movie
   Future<List?> getRecommended(String movieId) async {
     final String recommendedAPI = 
         '$urlBase/movie/$movieId/recommendations';
     return runAPI(recommendedAPI);
   }
 
+  // This is the similar mob
   Future<List?> getSimilar(String movieId) async {
     final String similarAPI = 
         '$urlBase/movie/$movieId/similar';
