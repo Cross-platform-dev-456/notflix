@@ -1,26 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
 import 'movie_detail.dart';
-import 'search.dart';
 
-class MovieList extends StatefulWidget {
-  const MovieList({super.key});
+class Search extends StatefulWidget {
+  const Search({super.key});
 
   @override
-  _MovieListState createState() => _MovieListState();
+  State<StatefulWidget> createState() => _SearchState();
 }
 
-class _MovieListState extends State<MovieList> {
-  String? result;
+class _SearchState extends State<Search> {
+  String? results;
   APIRunner? helper;
   int? moviesCount;
   List? movies;
 
   final String iconBase = 'https://image.tmdb.org/t/p/w92/';
   final String defaultImage =
-      'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
-  Icon visibleIcon = Icon(Icons.search);
-  Widget searchBar = Text('Movies');
+      'ttps://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
 
   @override
   void initState() {
@@ -33,21 +30,27 @@ class _MovieListState extends State<MovieList> {
   Widget build(BuildContext context) {
     NetworkImage image;
     return Scaffold(
-      appBar: AppBar(title: searchBar, actions: <Widget>[
-        IconButton(             // Place Holder for the user home page
+      appBar: AppBar(
+        title: TextField(
+          textInputAction: TextInputAction.search,
+          onSubmitted: (String text) {
+            search(text);
+          },
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 20.0,
+          ),
+          decoration: InputDecoration(
+            hintText: "Search For Movies",
+          ),
+        ), 
+        actions: <Widget>[
+        IconButton(
           icon: Icon(Icons.home),
           onPressed: () {
-            initialize(); 
+            Navigator.pop(context);
           }
         ), 
-        IconButton(
-          icon: visibleIcon,
-          onPressed: () {
-            MaterialPageRoute route = MaterialPageRoute(      // Routes to the search page
-              builder: (_) => Search());
-            Navigator.push(context, route);
-          },
-        ),
       ]),
       body: ListView.builder(
         itemCount: (moviesCount == null) ? 0 : moviesCount,
@@ -75,7 +78,7 @@ class _MovieListState extends State<MovieList> {
             ),
           );
         },
-      ),
+      )
     );
   }
 

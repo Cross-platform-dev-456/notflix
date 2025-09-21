@@ -7,9 +7,12 @@ import 'package:notflix/model/movie.dart';
 class APIRunner {
   final String api_key = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NmQ4OGZkYzE0ZmMxMDdjNzQxZTYyNGFiYTNjYWMzYiIsIm5iZiI6MTc1NzM1NjMyMS41OTEsInN1YiI6IjY4YmYyMTIxZDliZTBjZGYzNjk4YzlhNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fl3rvzIwWU87nda24DWaLeIUPYiUBCgzBhENIKipeEY';
   final String urlBase = 'https://api.themoviedb.org/3';
+
   final String apiUpcoming = '/movie/upcoming?';
   final String apiSearch = '/search/movie?';
+
   final String urlLanguage = '&language=en-US';
+  
 
   Future<List?> runAPI(API) async {
     http.Response result = await http.get(
@@ -50,5 +53,18 @@ class APIRunner {
     final String search =
         '$urlBase${apiSearch}query=$title';
     return runAPI(search);
+  }
+
+  // This is for recommended based on the selected movie - when 
+  Future<List?> getRecommended(String movieId) async {
+    final String recommendedAPI = 
+        '$urlBase/movie/$movieId/recommendations';
+    return runAPI(recommendedAPI);
+  }
+
+  Future<List?> getSimilar(String movieId) async {
+    final String similarAPI = 
+        '$urlBase/movie/$movieId/similar';
+    return runAPI(similarAPI);
   }
 }
