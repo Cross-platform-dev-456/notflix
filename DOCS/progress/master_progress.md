@@ -15,11 +15,6 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
   - [ ] Requirement #2: Create details screen so users see info about selected movie  
 - **LoC:** ___  
 
-#### 👤 Abdullahi Abdirahamn
-- **AI Option:** TBD / Not chosen yet  
-- **Feature #4: Watch Later Screen**
-  - [ ] Requirement #3: Implement Watch Later screen so users can save movies  
-- **LoC:** ___  
 
 #### 👤 Nate Brewer
 - **AI Option:** #2 – Assisted help for running tests and improving code  
@@ -42,9 +37,6 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 - [ ] (Add new features/requirements here)  
 - **LoC:** ___  
 
-#### 👤 Abdullahi Abdirahamn
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
@@ -60,9 +52,6 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 - [ ] (Add new features/requirements here)  
 - **LoC:** ___  
 
-#### 👤 Abdullahi Abdirahamn
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
