@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
 import 'movie_detail.dart';
-import 'search.dart';
 
 class MovieList extends StatefulWidget {
-  const MovieList({super.key});
-
   @override
   _MovieListState createState() => _MovieListState();
 }
@@ -34,48 +31,63 @@ class _MovieListState extends State<MovieList> {
     NetworkImage image;
     return Scaffold(
       appBar: AppBar(title: searchBar, actions: <Widget>[
-        IconButton(             // Place Holder for the user home page
-          icon: Icon(Icons.home),
-          onPressed: () {
-            initialize(); 
-          }
-        ), 
         IconButton(
           icon: visibleIcon,
           onPressed: () {
-            MaterialPageRoute route = MaterialPageRoute(      // Routes to the search page
-              builder: (_) => Search());
-            Navigator.push(context, route);
+            setState(
+              () {
+                if (this.visibleIcon.icon == Icons.search) {
+                  this.visibleIcon = Icon(Icons.cancel);
+                  this.searchBar = TextField(
+                    textInputAction: TextInputAction.search,
+                    onSubmitted: (String text) {
+                      search(text);
+                    },
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20.0,
+                    ),
+                  );
+                } else {
+                  this.visibleIcon = Icon(Icons.search);
+                  this.searchBar = Text('Movies');
+                }
+              },
+            );
           },
         ),
-      ]),
+      ]),      
       body: ListView.builder(
-        itemCount: (moviesCount == null) ? 0 : moviesCount,
-        itemBuilder: (BuildContext context, int position) {
-          if (movies?[position].posterPath != null) {
-            image = NetworkImage(iconBase + movies?[position].posterPath);
-          } else {
-            image = NetworkImage(defaultImage);
-          }
-          return Card(
-            color: Colors.white,
-            elevation: 2.0,
-            child: ListTile(
-              onTap: () {
-                MaterialPageRoute route = MaterialPageRoute(
-                    builder: (_) => MovieDetail(movies?[position]));
-                Navigator.push(context, route);
-              },
-              leading: CircleAvatar(
-                backgroundImage: image,
+          itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (BuildContext context, int position) {
+            if (movies?[position].posterPath != null) {
+              image = NetworkImage(iconBase + movies?[position].posterPath);
+            } else {
+              image = NetworkImage(defaultImage);
+            }
+            return Container(
+              color: Colors.white,
+              width: 200,
+              //elevation: 2.0,
+              child: ListTile(
+                onTap: () {
+                  MaterialPageRoute route = MaterialPageRoute(
+                      builder: (_) => MovieDetail(movies?[position]));
+                  Navigator.push(context, route);
+                },
+                leading: CircleAvatar(
+                  backgroundImage: image,
+                ),
+                title: Text(movies?[position].title),
+                subtitle: Text('Released: ' +
+                    movies?[position].releaseDate +
+                    ' - Vote: ' +
+                    movies![position].voteAverage.toString()),
               ),
-              title: Text(movies?[position].title),
-              subtitle: Text('${'Released: ' +
-                  movies?[position].releaseDate} - Vote: ${movies![position].voteAverage}'),
-            ),
-          );
-        },
-      ),
+            );
+          },
+        ),
     );
   }
 
