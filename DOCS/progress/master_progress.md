@@ -20,8 +20,9 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 - **AI Option:** #2 – Assisted help for running tests and improving code  
 - **Feature #3: Search Screen**
   - [ ] Requirement: Create User DB to store movies watched, watch later  
-  - [ ] Plan: Create unified theme for the entire app. Begin API understanding + start MongoDB user DB  
-- **LoC:** ___
+  - [ ] Plan: Create unified theme for the entire app. Begin API understanding + start MongoDB user DB 
+- **LoC:** 112
+  - Started research on the implementing MongoDB. Created the search page
 
 #### 👤 Danny Poff
 - **AI Option:** TBD / Not chosen yet  
