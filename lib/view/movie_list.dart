@@ -12,6 +12,7 @@ class _MovieListState extends State<MovieList> {
   APIRunner? helper;
   int? moviesCount;
   List? movies;
+  List? horror;
 
   final String iconBase = 'https://image.tmdb.org/t/p/w92/';
   final String defaultImage =
@@ -57,37 +58,76 @@ class _MovieListState extends State<MovieList> {
           },
         ),
       ]),      
-      body: ListView.builder(
-          itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
-          scrollDirection: Axis.horizontal,
-          itemBuilder: (BuildContext context, int position) {
-            if (movies?[position].posterPath != null) {
-              image = NetworkImage(iconBase + movies?[position].posterPath);
-            } else {
-              image = NetworkImage(defaultImage);
-            }
-            return Container(
-              color: Colors.white,
-              width: 200,
-              //elevation: 2.0,
-              child: ListTile(
-                onTap: () {
-                  MaterialPageRoute route = MaterialPageRoute(
-                      builder: (_) => MovieDetail(movies?[position]));
-                  Navigator.push(context, route);
-                },
-                leading: CircleAvatar(
-                  backgroundImage: image,
-                ),
-                title: Text(movies?[position].title),
-                subtitle: Text('Released: ' +
-                    movies?[position].releaseDate +
-                    ' - Vote: ' +
-                    movies![position].voteAverage.toString()),
-              ),
-            );
-          },
-        ),
+      body: Column(
+        children: [ 
+          Expanded (
+            child: ListView.builder(
+              itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int position) {
+                if (movies?[position].posterPath != null) {
+                  image = NetworkImage(iconBase + movies?[position].posterPath);
+                } else {
+                  image = NetworkImage(defaultImage);
+                }
+                return Container(
+                  color: Colors.white,
+                  width: 200,
+                  //elevation: 2.0,
+                  child: ListTile(
+                    onTap: () {
+                      MaterialPageRoute route = MaterialPageRoute(
+                          builder: (_) => MovieDetail(movies?[position]));
+                      Navigator.push(context, route);
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: image,
+                    ),
+                    title: Text(movies?[position].title),
+                    subtitle: Text('Released: ' +
+                        movies?[position].releaseDate +
+                        ' - Vote: ' +
+                        movies![position].voteAverage.toString()),
+                  ),
+                );
+              },
+            ),
+          ),
+          Expanded (
+            child: ListView.builder(
+              itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
+              scrollDirection: Axis.horizontal,
+              itemBuilder: (BuildContext context, int position) {
+                if (horror?[position].posterPath != null) {
+                  image = NetworkImage(iconBase + horror?[position].posterPath);
+                } else {
+                  image = NetworkImage(defaultImage);
+                }
+                return Container(
+                  color: Colors.white,
+                  width: 200,
+                  //elevation: 2.0,
+                  child: ListTile(
+                    onTap: () {
+                      MaterialPageRoute route = MaterialPageRoute(
+                          builder: (_) => MovieDetail(horror?[position]));
+                      Navigator.push(context, route);
+                    },
+                    leading: CircleAvatar(
+                      backgroundImage: image,
+                    ),
+                    title: Text(horror?[position].title),
+                    subtitle: Text('Released: ' +
+                        horror?[position].releaseDate +
+                        ' - Vote: ' +
+                        horror![position].voteAverage.toString()),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -103,10 +143,12 @@ class _MovieListState extends State<MovieList> {
 
   Future initialize() async {
     movies = (await helper?.getUpcoming())!;
+    horror = (await helper?.getGenre('Horror'))!;
     setState(
       () {
         moviesCount = movies?.length;
         movies = movies;
+        horror = horror;
       },
     );
   }
