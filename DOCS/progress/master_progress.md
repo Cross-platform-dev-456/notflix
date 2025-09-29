@@ -35,8 +35,9 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 ### 📅 Week 2 (9/22 – 9/29)
 
 #### 👤 Landen Tomlin
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
+**Feature #3: Details Screen**
+  - [ ] Requirement #2: Create details screen so users see info about selected movie   
+- **LoC:** 2  
 
 
 #### 👤 Nate Brewer
@@ -50,8 +51,10 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 ### 📅 Week 3 (9/30 – 10/7)
 
 #### 👤 Landen Tomlin
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
+**Feature #3: Details Screen**
+  - [ ] Requirement #2: Create details screen so users see info about selected movie
+  - [ ] Plan: Add more information to detail page.  
+- **LoC:** 26  
 
 
 #### 👤 Nate Brewer
