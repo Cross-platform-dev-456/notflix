@@ -1,4 +1,4 @@
-import 'dart:io';
+//import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:notflix/model/movie.dart';
@@ -22,7 +22,7 @@ class APIRunner {
         'Accept': 'application/json',
       },
     );
-    if (result.statusCode == HttpStatus.ok) {
+    if (result.statusCode == 200) {
       final jsonResponse = json.decode(result.body);
       final moviesMap = jsonResponse['results'];
       try {
