@@ -11,20 +11,7 @@ class MovieDetail extends StatelessWidget {
     String path;
     path = imgPath + movie.posterPath;
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        iconTheme: const IconThemeData(color: Colors.white),
-        elevation: 0,
-        title: Text(
-          movie.title,
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-          ),
-        ),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: Text(movie.title)),
       body: SingleChildScrollView(
         child: Center(
           child: Column(
@@ -36,14 +23,7 @@ class MovieDetail extends StatelessWidget {
               ),
               Container(
                 padding: EdgeInsets.only(left: 16, right: 16),
-                child: Text(
-                  movie.overview,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    height: 1.5,
-                  ),
-                ),
+                child: Text(movie.overview),
               ),
             ],
           ),
