@@ -72,6 +72,7 @@ class APIRunner {
     );
     if (result.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(result.body);
+      //print(jsonResponse);
       for(int i = 0; i < jsonResponse['genres'].length; i++) {
         if(jsonResponse['genres'][i]['name'] == genre) {
           id = jsonResponse['genres'][i]['id'].toString();

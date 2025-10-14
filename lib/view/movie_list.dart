@@ -13,10 +13,12 @@ class _MovieListState extends State<MovieList> {
   int? moviesCount;
   List? movies;
   List? horror;
+  List? action;
+  List? adventure;
+  List? mystery;
+  List? documentery;
+  List? animation;
 
-  final String iconBase = 'https://image.tmdb.org/t/p/w92/';
-  final String defaultImage =
-      'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
   Icon visibleIcon = Icon(Icons.search);
   Widget searchBar = Text('Movies');
 
@@ -29,6 +31,9 @@ class _MovieListState extends State<MovieList> {
 
   @override
   Widget build(BuildContext context) {
+    final String iconBase = 'https://image.tmdb.org/t/p/w92/';
+    final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
+
     NetworkImage image;
     return Scaffold(
       appBar: AppBar(title: searchBar, actions: <Widget>[
@@ -51,84 +56,45 @@ class _MovieListState extends State<MovieList> {
                   );
                 } else {
                   this.visibleIcon = Icon(Icons.search);
-                  this.searchBar = Text('Movies');
+                  this.searchBar = Text('Notflix');
                 }
               },
             );
           },
         ),
       ]),      
-      body: Column(
-        children: [ 
-          Expanded (
-            child: ListView.builder(
-              itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int position) {
-                if (movies?[position].posterPath != null) {
-                  image = NetworkImage(iconBase + movies?[position].posterPath);
-                } else {
-                  image = NetworkImage(defaultImage);
-                }
-                return Container(
-                  color: Colors.white,
-                  width: 200,
-                  //elevation: 2.0,
-                  child: ListTile(
-                    onTap: () {
-                      MaterialPageRoute route = MaterialPageRoute(
-                          builder: (_) => MovieDetail(movies?[position]));
-                      Navigator.push(context, route);
-                    },
-                    leading: CircleAvatar(
-                      backgroundImage: image,
-                    ),
-                    title: Text(movies?[position].title),
-                    subtitle: Text('Released: ' +
-                        movies?[position].releaseDate +
-                        ' - Vote: ' +
-                        movies![position].voteAverage.toString()),
-                  ),
-                );
-              },
-            ),
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(child: movieTitle(title: 'Upcoming')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: movies)
           ),
-          Expanded (
-            child: ListView.builder(
-              itemCount: (this.moviesCount == null) ? 0 : this.moviesCount,
-              scrollDirection: Axis.horizontal,
-              itemBuilder: (BuildContext context, int position) {
-                if (horror?[position].posterPath != null) {
-                  image = NetworkImage(iconBase + horror?[position].posterPath);
-                } else {
-                  image = NetworkImage(defaultImage);
-                }
-                return Container(
-                  color: Colors.white,
-                  width: 200,
-                  //elevation: 2.0,
-                  child: ListTile(
-                    onTap: () {
-                      MaterialPageRoute route = MaterialPageRoute(
-                          builder: (_) => MovieDetail(horror?[position]));
-                      Navigator.push(context, route);
-                    },
-                    leading: CircleAvatar(
-                      backgroundImage: image,
-                    ),
-                    title: Text(horror?[position].title),
-                    subtitle: Text('Released: ' +
-                        horror?[position].releaseDate +
-                        ' - Vote: ' +
-                        horror![position].voteAverage.toString()),
-                  ),
-                );
-              },
-            ),
+          SliverToBoxAdapter(child: movieTitle(title: 'Action')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: action)
           ),
-        ],
-      ),
-    );
+          SliverToBoxAdapter(child: movieTitle(title: 'Adventure')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: adventure)
+          ),
+          SliverToBoxAdapter(child: movieTitle(title: 'Horror')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: horror)
+          ),
+          SliverToBoxAdapter(child: movieTitle(title: 'Mystery')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: mystery)
+          ),
+          SliverToBoxAdapter(child: movieTitle(title: 'Animation')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: animation)
+          ),
+          SliverToBoxAdapter(child: movieTitle(title: 'Documentery')),
+          SliverToBoxAdapter(
+            child: movieGroup(moviesCount: moviesCount, movieGroup: documentery)
+          ),
+        ]),
+      );
   }
 
   Future search(text) async {
@@ -144,12 +110,76 @@ class _MovieListState extends State<MovieList> {
   Future initialize() async {
     movies = (await helper?.getUpcoming())!;
     horror = (await helper?.getGenre('Horror'))!;
+    action = (await helper?.getGenre('Action'))!;
+    adventure = (await helper?.getGenre('Adventure'))!;
+    mystery = (await helper?.getGenre('Mystery'))!;
+    documentery = (await helper?.getGenre('Documentary'))!;
+    animation = (await helper?.getGenre('Animation'))!;
     setState(
       () {
         moviesCount = movies?.length;
         movies = movies;
         horror = horror;
+        action = action;
+        adventure = adventure;
+        mystery = mystery;
+        documentery = documentery;
+        animation = animation;
       },
     );
   }
+}
+
+// widget for showing the movie group title
+Widget movieTitle({required title}) {
+  return Padding(padding: const EdgeInsets.all(8),
+    child: Text('$title', style: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      )
+    )
+  );
+}
+
+// widget for making a horizontally scrollable movie list
+Widget movieGroup({required moviesCount, required movieGroup, }) {
+  final String iconBase = 'https://image.tmdb.org/t/p/w92/';
+  final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
+  
+  NetworkImage image;
+
+  return Container(
+    height: 100, 
+    child: ListView.builder(
+      itemCount: (moviesCount == null) ? 0 : moviesCount,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (BuildContext context, int position) {
+        if (movieGroup?[position].posterPath != null) {
+          image = NetworkImage(iconBase + movieGroup?[position].posterPath);
+        } else {
+          image = NetworkImage(defaultImage);
+        }
+        return Container(
+          color: Colors.white,
+          width: 200,
+          height: 10,
+          child: ListTile(
+            onTap: () {
+              MaterialPageRoute route = MaterialPageRoute(
+                  builder: (_) => MovieDetail(movieGroup?[position]));
+              Navigator.push(context, route);
+            },
+            leading: CircleAvatar(
+              backgroundImage: image,
+            ),
+            title: Text(movieGroup?[position].title),
+            subtitle: Text('Released: ' +
+                movieGroup?[position].releaseDate +
+                ' - Vote: ' +
+                movieGroup![position].voteAverage.toString()),
+          ),
+        );
+      }
+    )
+  );
 }
