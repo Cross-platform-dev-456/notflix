@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
 import 'movie_detail.dart';
+import 'search.dart';
 
 class MovieList extends StatefulWidget {
   @override
@@ -40,27 +41,13 @@ class _MovieListState extends State<MovieList> {
         IconButton(
           icon: visibleIcon,
           onPressed: () {
-            setState(
-              () {
-                if (this.visibleIcon.icon == Icons.search) {
-                  this.visibleIcon = Icon(Icons.cancel);
-                  this.searchBar = TextField(
-                    textInputAction: TextInputAction.search,
-                    onSubmitted: (String text) {
-                      search(text);
-                    },
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20.0,
-                    ),
-                  );
-                } else {
-                  this.visibleIcon = Icon(Icons.search);
-                  this.searchBar = Text('Notflix');
-                }
-              },
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (context) => const Search(),
+              ),
             );
           },
+
         ),
       ]),      
       body: CustomScrollView(
