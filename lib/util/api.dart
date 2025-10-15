@@ -12,7 +12,7 @@ class APIRunner {
   final String apiDiscover = '/discover/movie?';
   final String apiSearch = '/search/movie?';
 
-  final String urlLanguage = '&language=en-US';
+  final String urlLanguage = '?language=en-US';
   
 
   Future<List?> runAPI(API) async {
@@ -102,4 +102,32 @@ class APIRunner {
         '$urlBase/movie/$movieId/similar';
     return runAPI(similarAPI);
   }
+
+  Future<String?> getTrailerKey(String movieId) async {
+  final String videoAPI = '$urlBase/movie/$movieId/videos$urlLanguage';
+  final response = await http.get(
+    Uri.parse(videoAPI),
+    headers: {
+      'Authorization': 'Bearer $api_key',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == HttpStatus.ok) {
+    final jsonResponse = json.decode(response.body);
+    final videos = jsonResponse['results'] as List;
+    if (videos.isEmpty) return null;
+
+    final trailer = videos.firstWhere(
+      (v) => v['site'] == 'YouTube' && v['type'] == 'Trailer',
+      orElse: () => null,
+    );
+
+    return trailer?['key'];
+  } else {
+    print('Failed to load trailer: ${response.statusCode}');
+    return null;
+  }
+}
+
 }
