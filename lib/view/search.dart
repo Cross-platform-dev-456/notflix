@@ -139,7 +139,7 @@ class _SearchState extends State<Search> {
                       }
                       return Card(
                         color: Colors.white,
-                        elevation: 2.0,
+                        elevation: 8.0,
                         child: Container(
                           width: 300,
                           height: 300,
@@ -337,9 +337,15 @@ class _SearchState extends State<Search> {
   }
 
   Widget _buildSearchResults() {
-    return ListView.builder(
+    return GridView.builder(
+      padding: EdgeInsets.all(8.0),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4, // Number of cards per row
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        childAspectRatio: 1.2 // Adjust this to make cards taller/shorter
+      ),
       itemCount: searchCount ?? 0,
-      scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         if (searchResults?[index].posterPath != null) {
           image = NetworkImage(iconBase + searchResults?[index].posterPath);
@@ -348,22 +354,53 @@ class _SearchState extends State<Search> {
         }
         return Card(
           color: Colors.white,
-          elevation: 2.0,
-          child: Container(
-            width: 300,
-            height: 300,
-            child: ListTile(
-              onTap: () {
-                MaterialPageRoute route = MaterialPageRoute(
-                  builder: (_) => MovieDetail(searchResults?[index]),
-                );
-                Navigator.push(context, route);
-              },
-              leading: CircleAvatar(backgroundImage: image),
-              title: Text(searchResults?[index].title),
-              subtitle: Text(
-                '${'Released: ' + searchResults?[index].releaseDate} - Vote: ${searchResults![index].voteAverage}',
-              ),
+          elevation: 8.0,
+          child: InkWell(
+            onTap: () {
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (_) => MovieDetail(searchResults?[index]),
+              );
+              Navigator.push(context, route);
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                      image: DecorationImage(
+                        image: image!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          searchResults?[index].title ?? '',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Vote: ${searchResults![index].voteAverage}',
+                          style: TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
