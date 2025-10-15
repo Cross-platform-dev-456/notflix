@@ -42,9 +42,9 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
-  - [ ] Requirement: User DB – display user searches in a grid  
-  - [ ] Plan: Continue working on DB. Ensure searching is displayed in grid matching overall theme.  
-- **LoC:** ___  
+  - [X] Requirement: User DB – display user searches in a grid  
+  - [X] Plan: Continue working on DB. Ensure searching is displayed in grid matching overall theme.  
+- **LoC:** 122 
 
 ---
 
@@ -59,9 +59,9 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
-  - [ ] Requirement: User DB – display user searches in grid  
+  - [X] Requirement: User DB – display user searches in grid  
   - [ ] Plan: Use API + user DB (most watched genres) to create simple recommended section on search page  
-- **LoC:** ___  
+- **LoC:** 207  
 
 ---
 

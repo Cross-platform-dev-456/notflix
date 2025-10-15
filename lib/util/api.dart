@@ -9,6 +9,7 @@ class APIRunner {
   final String urlBase = 'https://api.themoviedb.org/3';
 
   final String apiUpcoming = '/movie/upcoming?';
+  final String apiDiscover = '/discover/movie?';
   final String apiSearch = '/search/movie?';
 
   final String urlLanguage = '?language=en-US';
@@ -22,7 +23,7 @@ class APIRunner {
         'Accept': 'application/json',
       },
     );
-    if (result.statusCode == HttpStatus.ok) {
+    if (result.statusCode == 200) {
       final jsonResponse = json.decode(result.body);
       final moviesMap = jsonResponse['results'];
       try {
@@ -47,6 +48,39 @@ class APIRunner {
   Future<List?> getUpcoming() async {
     final String upcomingAPI = urlBase + apiUpcoming + urlLanguage;
     return runAPI(upcomingAPI);
+  }
+
+  Future<List?> getGenre(String genre) async {
+    String? genreId = await getIDByGenre(genre);
+    final String genreAPI = 
+        '$urlBase${apiDiscover}with_genres=$genreId$urlLanguage';
+    return runAPI(genreAPI);
+  }
+
+  //Gets a genre's ID. capitalize first letter in the genre
+  Future<String?> getIDByGenre(String genre) async {
+    String id = '0';
+    final String genreUrl = 
+        '$urlBase/genre/movie/list?$urlLanguage';
+
+    http.Response result = await http.get(
+      Uri.parse(genreUrl),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
+    if (result.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(result.body);
+      //print(jsonResponse);
+      for(int i = 0; i < jsonResponse['genres'].length; i++) {
+        if(jsonResponse['genres'][i]['name'] == genre) {
+          id = jsonResponse['genres'][i]['id'].toString();
+        }
+      }
+    }
+      
+    return id;
   }
 
   Future<List?> searchMovie(String title) async {
