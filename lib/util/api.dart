@@ -1,4 +1,4 @@
-//import 'dart:io';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:notflix/model/movie.dart';
@@ -9,9 +9,10 @@ class APIRunner {
   final String urlBase = 'https://api.themoviedb.org/3';
 
   final String apiUpcoming = '/movie/upcoming?';
+  final String apiDiscover = '/discover/movie?';
   final String apiSearch = '/search/movie?';
 
-  final String urlLanguage = '&language=en-US';
+  final String urlLanguage = '?language=en-US';
   
 
   Future<List?> runAPI(API) async {
@@ -49,6 +50,39 @@ class APIRunner {
     return runAPI(upcomingAPI);
   }
 
+  Future<List?> getGenre(String genre) async {
+    String? genreId = await getIDByGenre(genre);
+    final String genreAPI = 
+        '$urlBase${apiDiscover}with_genres=$genreId$urlLanguage';
+    return runAPI(genreAPI);
+  }
+
+  //Gets a genre's ID. capitalize first letter in the genre
+  Future<String?> getIDByGenre(String genre) async {
+    String id = '0';
+    final String genreUrl = 
+        '$urlBase/genre/movie/list?$urlLanguage';
+
+    http.Response result = await http.get(
+      Uri.parse(genreUrl),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
+    if (result.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(result.body);
+      //print(jsonResponse);
+      for(int i = 0; i < jsonResponse['genres'].length; i++) {
+        if(jsonResponse['genres'][i]['name'] == genre) {
+          id = jsonResponse['genres'][i]['id'].toString();
+        }
+      }
+    }
+      
+    return id;
+  }
+
   Future<List?> searchMovie(String title) async {
     final String search =
         '$urlBase${apiSearch}query=$title';
@@ -68,4 +102,32 @@ class APIRunner {
         '$urlBase/movie/$movieId/similar';
     return runAPI(similarAPI);
   }
+
+  Future<String?> getTrailerKey(String movieId) async {
+  final String videoAPI = '$urlBase/movie/$movieId/videos$urlLanguage';
+  final response = await http.get(
+    Uri.parse(videoAPI),
+    headers: {
+      'Authorization': 'Bearer $api_key',
+      'Accept': 'application/json',
+    },
+  );
+
+  if (response.statusCode == HttpStatus.ok) {
+    final jsonResponse = json.decode(response.body);
+    final videos = jsonResponse['results'] as List;
+    if (videos.isEmpty) return null;
+
+    final trailer = videos.firstWhere(
+      (v) => v['site'] == 'YouTube' && v['type'] == 'Trailer',
+      orElse: () => null,
+    );
+
+    return trailer?['key'];
+  } else {
+    print('Failed to load trailer: ${response.statusCode}');
+    return null;
+  }
+}
+
 }
