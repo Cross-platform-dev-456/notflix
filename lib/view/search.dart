@@ -4,6 +4,100 @@ import 'movie_detail.dart';
 import 'package:notflix/util/db.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
+// Reusable movie card widget for consistent styling
+class MovieCard extends StatelessWidget {
+  final dynamic movie;
+  final double width;
+  final double height;
+  final String iconBase;
+  final String defaultImage;
+
+  const MovieCard({
+    super.key,
+    required this.movie,
+    this.width = 300,
+    this.height = 300,
+    required this.iconBase,
+    required this.defaultImage,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    NetworkImage image;
+    if (movie?.posterPath != null) {
+      image = NetworkImage(iconBase + movie.posterPath);
+    } else {
+      image = NetworkImage(defaultImage);
+    }
+
+    // Determine if this is a smaller card (for grid layout)
+    bool isGridCard = width == double.infinity;
+    double titleFontSize = isGridCard ? 16 : 18;
+    double subtitleFontSize = isGridCard ? 12 : 14;
+
+    return Card(
+      color: Colors.white,
+      elevation: 8.0,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          image: DecorationImage(image: image, fit: BoxFit.cover),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () {
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (_) => MovieDetail(movie),
+              );
+              Navigator.push(context, route);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(4),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black.withValues()],
+                ),
+              ),
+              padding: EdgeInsets.all(isGridCard ? 12 : 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    movie?.title ?? '',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: titleFontSize,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 4),
+                  Text(
+                    '${'Released: ' + (movie?.releaseDate ?? '')} - Vote: ${movie?.voteAverage}',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: subtitleFontSize,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class Search extends StatefulWidget {
   const Search({super.key});
 
@@ -24,12 +118,10 @@ class _SearchState extends State<Search> {
   int? searchCount;
   List? searchResults;
 
-  NetworkImage? image;
-
   final TextEditingController _searchController = TextEditingController();
 
   @override
-  void dispose () {
+  void dispose() {
     _searchController.dispose();
     super.dispose();
   }
@@ -50,7 +142,7 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     // pop scope prevents multfinger gestures from happening on the page
     return PopScope(
-      canPop: false, 
+      canPop: false,
       child: Scaffold(
         appBar: AppBar(
           title: TextFormField(
@@ -63,48 +155,44 @@ class _SearchState extends State<Search> {
                 search(text);
               }
             },
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 20.0,
-            ),
+            style: TextStyle(color: Colors.black, fontSize: 20.0),
             decoration: InputDecoration(
               hintText: "Search For Movies",
               suffixIcon: _searchController.text.isNotEmpty
-                ? IconButton(
-                  icon: Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    clearSearch();
-                  },
-                )
-                : null,
+                  ? IconButton(
+                      icon: Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        clearSearch();
+                      },
+                    )
+                  : null,
             ),
-          ), 
-          actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.home),
-            onPressed: () {
-              Navigator.pop(context);
-            }
-          ), 
-          IconButton(
-            icon: Icon(Icons.settings),
-            onPressed: ()async  => await testDb(),
           ),
-        ]),
-        body: isSearching
-          ? _buildSearchResults()
-          : defautContent(),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.home),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              onPressed: () async => await testDb(),
+            ),
+          ],
+        ),
+        body: isSearching ? _buildSearchResults() : defautContent(),
       ),
     );
   }
-
 
   Widget defautContent() {
     return ListView(
       scrollDirection: Axis.vertical,
       children: <Widget>[
-        Container( // For You
+        Container(
+          // For You
           margin: EdgeInsets.all(20.0),
           child: Column(
             spacing: 5.0,
@@ -130,75 +218,10 @@ class _SearchState extends State<Search> {
                     scrollDirection: Axis.horizontal,
                     itemCount: (moviesCount == null) ? 0 : moviesCount,
                     itemBuilder: (BuildContext context, int position) {
-                      if (movies?[position].posterPath != null) {
-                        image = NetworkImage(
-                          iconBase + movies?[position].posterPath,
-                        );
-                      } else {
-                        image = NetworkImage(defaultImage);
-                      }
-                      return Card(
-                        color: Colors.white,
-                        elevation: 8.0,
-                        child: Container(
-                          width: 300,
-                          height: 300,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            image: DecorationImage(
-                              image: image!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                MaterialPageRoute route = MaterialPageRoute(
-                                  builder: (_) =>
-                                      MovieDetail(movies?[position]),
-                                );
-                                Navigator.push(context, route);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withValues(),
-                                    ],
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      movies?[position].title ?? '',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      '${'Released: ' + (movies?[position].releaseDate ?? '')} - Vote: ${movies![position].voteAverage}',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return MovieCard(
+                        movie: movies?[position],
+                        iconBase: iconBase,
+                        defaultImage: defaultImage,
                       );
                     },
                   );
@@ -207,7 +230,8 @@ class _SearchState extends State<Search> {
             ],
           ),
         ),
-        Container( // Because You Watched
+        Container(
+          // Because You Watched
           margin: EdgeInsets.all(20.0),
           child: Column(
             spacing: 5.0,
@@ -219,7 +243,10 @@ class _SearchState extends State<Search> {
                   top: 5.0,
                   bottom: 5.0,
                 ),
-                child: Text('Because You Watched', textScaler: TextScaler.linear(1.2)),
+                child: Text(
+                  'Because You Watched',
+                  textScaler: TextScaler.linear(1.2),
+                ),
               ),
               CarouselSlider(
                 options: CarouselOptions(
@@ -233,75 +260,10 @@ class _SearchState extends State<Search> {
                     scrollDirection: Axis.horizontal,
                     itemCount: (moviesCount == null) ? 0 : moviesCount,
                     itemBuilder: (BuildContext context, int position) {
-                      if (movies?[position].posterPath != null) {
-                        image = NetworkImage(
-                          iconBase + movies?[position].posterPath,
-                        );
-                      } else {
-                        image = NetworkImage(defaultImage);
-                      }
-                      return Card(
-                        color: Colors.white,
-                        elevation: 2.0,
-                        child: Container(
-                          width: 300,
-                          height: 300,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(4),
-                            image: DecorationImage(
-                              image: image!,
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                          child: Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                MaterialPageRoute route = MaterialPageRoute(
-                                  builder: (_) =>
-                                      MovieDetail(movies?[position]),
-                                );
-                                Navigator.push(context, route);
-                              },
-                              child: Container(
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(4),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.topCenter,
-                                    end: Alignment.bottomCenter,
-                                    colors: [
-                                      Colors.transparent,
-                                      Colors.black.withValues(),
-                                    ],
-                                  ),
-                                ),
-                                padding: EdgeInsets.all(16),
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      movies?[position].title ?? '',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 4),
-                                    Text(
-                                      '${'Released: ' + (movies?[position].releaseDate ?? '')} - Vote: ${movies![position].voteAverage}',
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
+                      return MovieCard(
+                        movie: movies?[position],
+                        iconBase: iconBase,
+                        defaultImage: defaultImage,
                       );
                     },
                   );
@@ -340,69 +302,20 @@ class _SearchState extends State<Search> {
     return GridView.builder(
       padding: EdgeInsets.all(8.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4, // Number of cards per row
+        crossAxisCount: 2, // Reduced from 4 to 2 for better card visibility
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
-        childAspectRatio: 1.2 // Adjust this to make cards taller/shorter
+        childAspectRatio:
+            0.7, // Adjusted for the taller cards with gradient overlay
       ),
       itemCount: searchCount ?? 0,
       itemBuilder: (BuildContext context, int index) {
-        if (searchResults?[index].posterPath != null) {
-          image = NetworkImage(iconBase + searchResults?[index].posterPath);
-        } else {
-          image = NetworkImage(defaultImage);
-        }
-        return Card(
-          color: Colors.white,
-          elevation: 8.0,
-          child: InkWell(
-            onTap: () {
-              MaterialPageRoute route = MaterialPageRoute(
-                builder: (_) => MovieDetail(searchResults?[index]),
-              );
-              Navigator.push(context, route);
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-                      image: DecorationImage(
-                        image: image!,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          searchResults?[index].title ?? '',
-                          style: TextStyle(fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          'Vote: ${searchResults![index].voteAverage}',
-                          style: TextStyle(fontSize: 12),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+        return MovieCard(
+          movie: searchResults?[index],
+          width: double.infinity, // Fill the grid cell width
+          height: double.infinity, // Fill the grid cell height
+          iconBase: iconBase,
+          defaultImage: defaultImage,
         );
       },
     );
