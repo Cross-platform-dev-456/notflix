@@ -14,33 +14,54 @@ class Search extends StatefulWidget {
 class _SearchState extends State<Search> {
   String? results;
   APIRunner? helper;
-  int? moviesCount;
-  List? movies;
   DbConnection? db;
 
-  final String iconBase = 'https://image.tmdb.org/t/p/w92/';
+  int? moviesCount;
+  List? movies;
+
+  late bool isSearching;
+
+  int? searchCount;
+  List? searchResults;
+
+  NetworkImage? image;
+
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void dispose () {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  final String iconBase = 'https://image.tmdb.org/t/p/w500/';
   final String defaultImage =
-      'ttps://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
+      'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
 
   @override
   void initState() {
     helper = APIRunner();
+    isSearching = false;
     initialize();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    NetworkImage image;
     // pop scope prevents multfinger gestures from happening on the page
     return PopScope(
       canPop: false, 
       child: Scaffold(
         appBar: AppBar(
-          title: TextField(
+          title: TextFormField(
+            controller: _searchController,
             textInputAction: TextInputAction.search,
-            onSubmitted: (String text) {
-              search(text);
+            onChanged: (String text) {
+              if (text.isEmpty) {
+                clearSearch();
+              } else {
+                search(text);
+              }
             },
             style: TextStyle(
               color: Colors.black,
@@ -48,6 +69,15 @@ class _SearchState extends State<Search> {
             ),
             decoration: InputDecoration(
               hintText: "Search For Movies",
+              suffixIcon: _searchController.text.isNotEmpty
+                ? IconButton(
+                  icon: Icon(Icons.clear),
+                  onPressed: () {
+                    _searchController.clear();
+                    clearSearch();
+                  },
+                )
+                : null,
             ),
           ), 
           actions: <Widget>[
@@ -62,161 +92,332 @@ class _SearchState extends State<Search> {
             onPressed: ()async  => await testDb(),
           ),
         ]),
-        body: ListView(
-          scrollDirection: Axis.vertical,
-          children: <Widget>[
-            Container(      // For You 
-              margin: EdgeInsets.all(20.0),
-              child: Column(
-                spacing: 5.0,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left:30.0, top: 5.0, bottom: 5.0),
-                    child: Text('For You', textScaler: TextScaler.linear(1.2),),
-                  ),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 350,
-                      viewportFraction: 1.0,
-                      enableInfiniteScroll: false,
-                      padEnds: false,
-                    ),
-                    items: [1].map((i) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: (moviesCount == null) ? 0 : moviesCount,
-                        itemBuilder: (BuildContext context, int position) {
-                          if (movies?[position].posterPath != null) {
-                            image = NetworkImage(
-                              iconBase + movies?[position].posterPath,
-                            );
-                          } else {
-                            image = NetworkImage(defaultImage);
-                          }
-                          return Card(
-                            color: Colors.white,
-                            elevation: 2.0,
-                            child: Container(
-                              width: 300,
-                              height: 300,
-                              child: ListTile(
-                                onTap: () {
-                                  MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (_) =>
-                                        MovieDetail(movies?[position]),
-                                  );
-                                  Navigator.push(context, route);
-                                },
-                                leading: CircleAvatar(backgroundImage: image),
-                                title: Text(movies?[position].title),
-                                subtitle: Text(
-                                  '${'Released: ' + movies?[position].releaseDate} - Vote: ${movies![position].voteAverage}',
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            
-          ),
-            Container(      // Because You Watched
-              margin: EdgeInsets.all(20.0),
-              child: Column(
-                spacing: 5.0,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left:30.0, top: 5.0, bottom: 5.0),
-                    child: Text('Because You watched', textScaler: TextScaler.linear(1.2),),
-                  ),
-                  CarouselSlider(
-                    options: CarouselOptions(
-                      height: 350,
-                      viewportFraction: 1.0,
-                      enableInfiniteScroll: false,
-                      padEnds: false,
-                    ),
-                    items: [1].map((i) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: (moviesCount == null) ? 0 : moviesCount,
-                        itemBuilder: (BuildContext context, int position) {
-                          if (movies?[position].posterPath != null) {
-                            image = NetworkImage(
-                              iconBase + movies?[position].posterPath,
-                            );
-                          } else {
-                            image = NetworkImage(defaultImage);
-                          }
-                          return Card(
-                            color: Colors.white,
-                            elevation: 2.0,
-                            child: Container(
-                              width: 300,
-                              height: 300,
-                              child: ListTile(
-                                onTap: () {
-                                  MaterialPageRoute route = MaterialPageRoute(
-                                    builder: (_) =>
-                                        MovieDetail(movies?[position]),
-                                  );
-                                  Navigator.push(context, route);
-                                },
-                                leading: CircleAvatar(backgroundImage: image),
-                                title: Text(movies?[position].title),
-                                subtitle: Text(
-                                  '${'Released: ' + movies?[position].releaseDate} - Vote: ${movies![position].voteAverage}',
-                                ),
-                              ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
-              ),
-            
-          ),
-          ],
-        ),
+        body: isSearching
+          ? _buildSearchResults()
+          : defautContent(),
       ),
     );
   }
 
-  // Create a search by different attributes. I.e Genre, name, actor
 
-  Future search(text) async {
-
-    // Todo: clear search screen and display the results a vertical scroll
-
-
-    movies = (await helper?.searchMovie(text))!;
-    setState(
-      () {
-        moviesCount = movies?.length;
-        movies = movies;
-      },
+  Widget defautContent() {
+    return ListView(
+      scrollDirection: Axis.vertical,
+      children: <Widget>[
+        Container( // For You
+          margin: EdgeInsets.all(20.0),
+          child: Column(
+            spacing: 5.0,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 30.0,
+                  top: 5.0,
+                  bottom: 5.0,
+                ),
+                child: Text('For You', textScaler: TextScaler.linear(1.2)),
+              ),
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 350,
+                  viewportFraction: 1.0,
+                  enableInfiniteScroll: false,
+                  padEnds: false,
+                ),
+                items: [1].map((i) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount,
+                    itemBuilder: (BuildContext context, int position) {
+                      if (movies?[position].posterPath != null) {
+                        image = NetworkImage(
+                          iconBase + movies?[position].posterPath,
+                        );
+                      } else {
+                        image = NetworkImage(defaultImage);
+                      }
+                      return Card(
+                        color: Colors.white,
+                        elevation: 8.0,
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            image: DecorationImage(
+                              image: image!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (_) =>
+                                      MovieDetail(movies?[position]),
+                                );
+                                Navigator.push(context, route);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(),
+                                    ],
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      movies?[position].title ?? '',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      '${'Released: ' + (movies?[position].releaseDate ?? '')} - Vote: ${movies![position].voteAverage}',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+        Container( // Because You Watched
+          margin: EdgeInsets.all(20.0),
+          child: Column(
+            spacing: 5.0,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 30.0,
+                  top: 5.0,
+                  bottom: 5.0,
+                ),
+                child: Text('Because You Watched', textScaler: TextScaler.linear(1.2)),
+              ),
+              CarouselSlider(
+                options: CarouselOptions(
+                  height: 350,
+                  viewportFraction: 1.0,
+                  enableInfiniteScroll: false,
+                  padEnds: false,
+                ),
+                items: [1].map((i) {
+                  return ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount,
+                    itemBuilder: (BuildContext context, int position) {
+                      if (movies?[position].posterPath != null) {
+                        image = NetworkImage(
+                          iconBase + movies?[position].posterPath,
+                        );
+                      } else {
+                        image = NetworkImage(defaultImage);
+                      }
+                      return Card(
+                        color: Colors.white,
+                        elevation: 2.0,
+                        child: Container(
+                          width: 300,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(4),
+                            image: DecorationImage(
+                              image: image!,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          child: Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                MaterialPageRoute route = MaterialPageRoute(
+                                  builder: (_) =>
+                                      MovieDetail(movies?[position]),
+                                );
+                                Navigator.push(context, route);
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(4),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      Colors.transparent,
+                                      Colors.black.withValues(),
+                                    ],
+                                  ),
+                                ),
+                                padding: EdgeInsets.all(16),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      movies?[position].title ?? '',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                    Text(
+                                      '${'Released: ' + (movies?[position].releaseDate ?? '')} - Vote: ${movies![position].voteAverage}',
+                                      style: TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
   Future initialize() async {
     movies = (await helper?.getUpcoming())!;
-    setState(
-      () {
-        moviesCount = movies?.length;
-        movies = movies;
+    setState(() {
+      moviesCount = movies?.length;
+      movies = movies;
+    });
+  }
+
+  // TODO: Create a search by different attributes. I.e Genre, name, actor
+
+  /*
+    The search function of 
+  */
+  Future search(text) async {
+    searchResults = (await helper?.searchMovie(text))!;
+    setState(() {
+      isSearching = true; // Set search state to true
+      searchCount = searchResults?.length;
+      searchResults = searchResults;
+    });
+  }
+
+  Widget _buildSearchResults() {
+    return GridView.builder(
+      padding: EdgeInsets.all(8.0),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4, // Number of cards per row
+        crossAxisSpacing: 8.0,
+        mainAxisSpacing: 8.0,
+        childAspectRatio: 1.2 // Adjust this to make cards taller/shorter
+      ),
+      itemCount: searchCount ?? 0,
+      itemBuilder: (BuildContext context, int index) {
+        if (searchResults?[index].posterPath != null) {
+          image = NetworkImage(iconBase + searchResults?[index].posterPath);
+        } else {
+          image = NetworkImage(defaultImage);
+        }
+        return Card(
+          color: Colors.white,
+          elevation: 8.0,
+          child: InkWell(
+            onTap: () {
+              MaterialPageRoute route = MaterialPageRoute(
+                builder: (_) => MovieDetail(searchResults?[index]),
+              );
+              Navigator.push(context, route);
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
+                      image: DecorationImage(
+                        image: image!,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  flex: 1,
+                  child: Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          searchResults?[index].title ?? '',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        Text(
+                          'Vote: ${searchResults![index].voteAverage}',
+                          style: TextStyle(fontSize: 12),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
 
+  void clearSearch() {
+    setState(() {
+      isSearching = false;
+      searchCount = null;
+      searchResults = null;
+    });
+  }
+
   testDb() async {
-    try{
+    try {
       db = DbConnection();
       await db?.insertUserTest();
     } catch (e) {
@@ -224,5 +425,4 @@ class _SearchState extends State<Search> {
       print("Could not test db");
     }
   }
-
 }
