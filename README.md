@@ -32,9 +32,7 @@ Make it look and behave like Netflix (no games though)
    - description underneath
    - list of episodes, with there title, description
    - season selector to display episodes of another season
-7. Watch later screen
-   - display covers of movies saved to watch later
-   - have section for watched/continue watching
+
 
 # Screenshots
 
