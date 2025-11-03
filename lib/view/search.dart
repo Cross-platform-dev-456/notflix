@@ -180,6 +180,10 @@ class _SearchState extends State<Search> {
               icon: Icon(Icons.settings),
               onPressed: () async => await testDb(),
             ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () async => await testDb(),
+            )
           ],
         ),
         body: isSearching ? _buildSearchResults() : defautContent(),
@@ -332,7 +336,8 @@ class _SearchState extends State<Search> {
   testDb() async {
     try {
       db = DbConnection();
-      await db?.insertUserTest();
+      db?.getUserList();
+      //await db?.insertUserTest();
     } catch (e) {
       print(e.toString());
       print("Could not test db");

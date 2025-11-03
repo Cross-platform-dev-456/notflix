@@ -1,12 +1,51 @@
-//Username   brewern5_db_user
-//PW   dHnGqHWw2naNGR6U
+import 'package:pocketbase/pocketbase.dart';
 
-import 'package:mongo_dart/mongo_dart.dart';
-
-final String dbString = 'mongodb://brewern5_db_user:dHnGqHWw2naNGR6U@test.ywzop73.mongodb.net:27017/mongo_dart-blog?retryWrites=true&w=majority&appName=test';
-
+final pb = PocketBase('http://127.0.0.1:8090');
 class DbConnection {
 
+  Future<void> getUserList() async {
+    try {
+    // Authenticate first (this sets pb.authStore.token)
+    final authData = await pb.collection('users').authWithPassword(
+      'test@user.com',
+      'password123',
+    );
+    
+    print("Auth successful!");
+    print("User ID: ${authData.record?.id}");
+    print("Token: ${pb.authStore.token}");
+    
+    // Now fetch the list (authenticated request will include token)
+    final result = await pb.collection('users').getList(
+      page: 1,
+      perPage: 30,
+    );
+    
+    print("Records found: ${result.items.length}");
+    for (var record in result.items) {
+      print(record.toJson());
+    }
+  } catch (e) {
+    print("Error: $e");
+  }
+  }
+
+/*
+
+  Future<RecordAuth?> _logInUser (String email, String password) async {
+    
+  
+
+    print(pb.authStore.record);
+    print(pb.authStore.token);
+
+    return userData;
+  }
+
+*/
+
+}
+/*
   Future<Db> openDb() async {
 
     var db = Db(dbString);
@@ -95,3 +134,4 @@ class DbConnection {
   }
 
 }
+*/
