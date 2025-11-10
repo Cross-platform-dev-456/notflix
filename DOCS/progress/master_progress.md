@@ -20,8 +20,9 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 - **AI Option:** #2 – Assisted help for running tests and improving code  
 - **Feature #3: Search Screen**
   - [ ] Requirement: Create User DB to store movies watched, watch later  
-  - [ ] Plan: Create unified theme for the entire app. Begin API understanding + start MongoDB user DB  
-- **LoC:** ___
+  - [ ] Plan: Create unified theme for the entire app. Begin API understanding + start MongoDB user DB 
+- **LoC:** 112
+  - Started research on the implementing MongoDB. Created the search page
 
 #### 👤 Danny Poff
 - **AI Option:** TBD / Not chosen yet  
@@ -34,30 +35,33 @@ Check things off directly in GitHub by clicking **Edit** → tick boxes → comm
 ### 📅 Week 2 (9/22 – 9/29)
 
 #### 👤 Landen Tomlin
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
+**Feature #3: Details Screen**
+  - [ ] Requirement #2: Create details screen so users see info about selected movie   
+- **LoC:** 2  
 
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
-  - [ ] Requirement: User DB – display user searches in a grid  
-  - [ ] Plan: Continue working on DB. Ensure searching is displayed in grid matching overall theme.  
-- **LoC:** ___  
+  - [X] Requirement: User DB – display user searches in a grid  
+  - [X] Plan: Continue working on DB. Ensure searching is displayed in grid matching overall theme.  
+- **LoC:** 122 
 
 ---
 
 ### 📅 Week 3 (9/30 – 10/7)
 
 #### 👤 Landen Tomlin
-- [ ] (Add new features/requirements here)  
-- **LoC:** ___  
+**Feature #3: Details Screen**
+  - [ ] Requirement #2: Create details screen so users see info about selected movie
+  - [ ] Plan: Add more information to detail page.  
+- **LoC:** 26  
 
 
 #### 👤 Nate Brewer
 - **Feature #3: Search Rework**
-  - [ ] Requirement: User DB – display user searches in grid  
+  - [X] Requirement: User DB – display user searches in grid  
   - [ ] Plan: Use API + user DB (most watched genres) to create simple recommended section on search page  
-- **LoC:** ___  
+- **LoC:** 207  
 
 ---
 

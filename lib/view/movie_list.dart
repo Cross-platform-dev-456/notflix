@@ -393,3 +393,57 @@ Widget heroMovie({required movie, required context, required genres}) {
     ),
   );
 }
+
+// widget for showing the movie group title
+Widget movieTitle({required title}) {
+  return Padding(padding: const EdgeInsets.all(8),
+    child: Text('$title', style: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+      )
+    )
+  );
+}
+
+// widget for making a horizontally scrollable movie list
+Widget movieGroup({required moviesCount, required movieGroup, }) {
+  final String iconBase = 'https://image.tmdb.org/t/p/w92/';
+  final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
+  
+  NetworkImage image;
+
+  return Container(
+    height: 100, 
+    child: ListView.builder(
+      itemCount: (moviesCount == null) ? 0 : moviesCount,
+      scrollDirection: Axis.horizontal,
+      itemBuilder: (BuildContext context, int position) {
+        if (movieGroup?[position].posterPath != null) {
+          image = NetworkImage(iconBase + movieGroup?[position].posterPath);
+        } else {
+          image = NetworkImage(defaultImage);
+        }
+        return Container(
+          color: Colors.white,
+          width: 200,
+          height: 10,
+          child: ListTile(
+            onTap: () {
+              MaterialPageRoute route = MaterialPageRoute(
+                  builder: (_) => MovieDetail(movieGroup?[position]));
+              Navigator.push(context, route);
+            },
+            leading: CircleAvatar(
+              backgroundImage: image,
+            ),
+            title: Text(movieGroup?[position].title),
+            subtitle: Text('Released: ' +
+                movieGroup?[position].releaseDate +
+                ' - Vote: ' +
+                movieGroup![position].voteAverage.toString()),
+          ),
+        );
+      }
+    )
+  );
+}
