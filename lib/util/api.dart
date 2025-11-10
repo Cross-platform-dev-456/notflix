@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:notflix/model/movie.dart';
+import 'package:notflix/model/tvShow.dart';
 
 // 18361ad82497ec1cf55ca10b74f1d3750'; <- This is a dummy key
 class APIRunner {
@@ -11,11 +12,13 @@ class APIRunner {
   final String apiUpcoming = '/movie/upcoming?';
   final String apiDiscover = '/discover/movie?';
   final String apiSearch = '/search/movie?';
+  final String apiTvUpcoming = '/tv/airing_today?';
+  final String apiTvDiscover = '/discover/tv?';
 
   final String urlLanguage = '?language=en-US';
   
 
-  Future<List?> runAPI(API) async {
+  Future<List?> runAPI(API, type, genre) async {
     http.Response result = await http.get(
       Uri.parse(API),
       headers: {
@@ -27,9 +30,35 @@ class APIRunner {
       final jsonResponse = json.decode(result.body);
       final moviesMap = jsonResponse['results'];
       try {
-        var movies = moviesMap.map((i) => Movie.fromJson(i)).toList();
-        print('Successfully parsed ${movies.length} movies');
-        return movies;
+        late var movies = [];
+        if(type == 'movieGenres') {
+          movies = moviesMap.map((i) => MovieDiscover.fromJson(i)).toList();
+          genre = await getGenreByID(genre, 'Movies'); 
+          movies.insert(0, '${await genre} Movies');
+          print('Successfully parsed ${movies.length} movies');
+          return movies;
+        }
+        else if(type == 'moviesList') {
+          movies = moviesMap.map((i) => MovieList.fromJson(i)).toList();
+          movies.insert(0, 'Upcoming Movies');
+          print('Successfully parsed ${movies.length} movies');
+          return movies;
+        }
+        else if(type == 'tvGenres') {
+          movies = moviesMap.map((i) => TvShowDiscover.fromJson(i)).toList();
+          genre = await getGenreByID(genre, 'TV Shows'); 
+          movies.insert(0, '${await genre} TV Shows');
+          print('Successfully parsed ${movies.length} movies');
+          return movies;
+        }
+        else if(type == 'tvList') {
+          movies = moviesMap.map((i) => TvShowList.fromJson(i)).toList();
+          movies.insert(0, 'Upcoming TV Shows');
+          print('Successfully parsed ${movies.length} movies');
+          return movies;
+        }
+        print('Could not parse movies');
+        return [];
       } catch (e) {
         print('Error parsing movies: $e');
         return <Movie>[]; // Return empty list on error
@@ -45,16 +74,32 @@ class APIRunner {
     }
   }
 
-  Future<List?> getUpcoming() async {
-    final String upcomingAPI = urlBase + apiUpcoming + urlLanguage;
-    return runAPI(upcomingAPI);
+  Future<List?> getUpcoming(String? categorie) async {
+    String upcomingAPI;
+    if(categorie == 'Movies') {
+      upcomingAPI = urlBase + apiUpcoming + urlLanguage;
+      return runAPI(upcomingAPI, 'moviesList', '');
+    }
+    else if(categorie == 'TV Shows') {
+      upcomingAPI = urlBase + apiTvUpcoming + urlLanguage;
+      return runAPI(upcomingAPI, 'tvList', '');
+    }
+    
+    return [];
   }
 
-  Future<List?> getGenre(String genre) async {
-    String? genreId = await getIDByGenre(genre);
-    final String genreAPI = 
-        '$urlBase${apiDiscover}with_genres=$genreId$urlLanguage';
-    return runAPI(genreAPI);
+  Future<List?> getGenre(String genre, String? catagorie) async {
+    //String? genreId = await getIDByGenre(genre);
+    if(catagorie == 'Movies') {
+      String genreAPI = '$urlBase${apiDiscover}with_genres=$genre$urlLanguage';
+      return runAPI(genreAPI, 'movieGenres', genre);
+    }
+    else if(catagorie == 'TV Shows') {
+      String genreAPI = '$urlBase${apiTvDiscover}with_genres=$genre$urlLanguage';
+      return runAPI(genreAPI, 'tvGenres', genre);
+    }
+
+    return [];
   }
 
   //Gets a genre's ID. capitalize first letter in the genre
@@ -83,24 +128,60 @@ class APIRunner {
     return id;
   }
 
+  //Gets a genre's ID. capitalize first letter in the genre
+  Future<String?> getGenreByID(String id, type) async {
+    String? genre = 'Genre Not Found';
+    String genreUrl;
+    if(type == 'Movies') {
+      genreUrl = '$urlBase/genre/movie/list?$urlLanguage';
+    }
+    else if(type == 'TV Shows') {
+      genreUrl = '$urlBase/genre/tv/list?$urlLanguage';
+    }
+    else {
+      return genre;
+    }
+
+
+    http.Response result = await http.get(
+      Uri.parse(genreUrl),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
+    if (result.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(result.body);
+      //print(jsonResponse);
+      for(int i = 0; i < jsonResponse['genres'].length; i++) {
+        if(jsonResponse['genres'][i]['id'] == int.parse(id)) {
+
+          genre = jsonResponse['genres'][i]['name'];
+        }
+      }
+    }
+      
+    return genre;
+  }
+
   Future<List?> searchMovie(String title) async {
     final String search =
         '$urlBase${apiSearch}query=$title';
-    return runAPI(search);
+    return runAPI(search, 'upcoming', '');
   }
 
   // This is for recommended based on the selected movie
   Future<List?> getRecommended(String movieId) async {
     final String recommendedAPI = 
         '$urlBase/movie/$movieId/recommendations';
-    return runAPI(recommendedAPI);
+    return runAPI(recommendedAPI, 'upcoming', '');
   }
 
   // This is the similar mob
   Future<List?> getSimilar(String movieId) async {
     final String similarAPI = 
         '$urlBase/movie/$movieId/similar';
-    return runAPI(similarAPI);
+    return runAPI(similarAPI, 'upcoming', '');
   }
 
   Future<String?> getTrailerKey(String movieId) async {

@@ -1,4 +1,4 @@
-class Movie {
+class TvShow {
   late int id;
   late String title;
   late double voteAverage;
@@ -6,7 +6,7 @@ class Movie {
   late String overview;
   late String posterPath;
 
-  Movie(
+  TvShow(
     {required this.id,
     required this.title,
     required this.voteAverage,
@@ -16,21 +16,22 @@ class Movie {
     }
   );
 
-  Movie.fromJson(Map<String, dynamic> parsedJson) {
+  TvShow.fromJson(Map<String, dynamic> parsedJson) {
     id = parsedJson['id'] as int;
-    title = parsedJson['title'] as String? ?? '';
+    title = parsedJson['name'] as String? ?? '';
     voteAverage = (parsedJson['vote_average'] as double?) ?? 0.0;
-    releaseDate = parsedJson['release_date'] as String? ?? '';
+    releaseDate = parsedJson['first_air_date'] as String? ?? '';
     overview = parsedJson['overview'] as String? ?? '';
-    posterPath = parsedJson['poster_path'] as String? ?? '';
+    posterPath = parsedJson['backdrop_path'] as String? ?? '';
   }
+
 }
 
-// For movies that use the discover API
-class MovieDiscover extends Movie {
+// For TV Shows that use the discover API
+class TvShowDiscover extends TvShow {
   late List genres;
 
-  MovieDiscover(
+  TvShowDiscover(
     {
       required this.genres,
       required super.id,
@@ -42,18 +43,18 @@ class MovieDiscover extends Movie {
     }
   );
 
-  MovieDiscover.fromJson(Map<String, dynamic> parsedJson) 
+  TvShowDiscover.fromJson(Map<String, dynamic> parsedJson) 
   : super.fromJson(parsedJson) {
     genres = parsedJson['genres'] as List? ?? [];
   }
 
 }
 
-// For movies that use the list API
-class MovieList extends Movie {
+// For TV shows that use the list API
+class TvShowList extends TvShow {
   late List genres;
 
-  MovieList(
+  TvShowList(
     {
       required this.genres,
       required super.id,
@@ -65,9 +66,9 @@ class MovieList extends Movie {
     }
   );
 
-  MovieList.fromJson(Map<String, dynamic> parsedJson) 
+  TvShowList.fromJson(Map<String, dynamic> parsedJson) 
   : super.fromJson(parsedJson) {
-    genres = parsedJson['genre_ids'] as List? ?? [];
+    genres = parsedJson['genres'] as List? ?? [];
   }
 
 }
