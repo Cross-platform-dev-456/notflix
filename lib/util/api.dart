@@ -34,30 +34,30 @@ class APIRunner {
         if(type == 'movieGenres') {
           movies = moviesMap.map((i) => MovieDiscover.fromJson(i)).toList();
           genre = await getGenreByID(genre, 'Movies'); 
-          movies.insert(0, '${await genre} Movies');
+          movies[0].genres.add('${await genre} Movies');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
         else if(type == 'moviesList') {
           movies = moviesMap.map((i) => MovieList.fromJson(i)).toList();
-          movies.insert(0, 'Upcoming Movies');
+          movies[0].genres.add('Upcoming Movies');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
         else if(type == 'tvGenres') {
           movies = moviesMap.map((i) => TvShowDiscover.fromJson(i)).toList();
           genre = await getGenreByID(genre, 'TV Shows'); 
-          movies.insert(0, '${await genre} TV Shows');
+          movies[0].genres.add('${await genre} TV Shows');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
         else if(type == 'tvList') {
           movies = moviesMap.map((i) => TvShowList.fromJson(i)).toList();
-          movies.insert(0, 'Upcoming TV Shows');
+          movies[0].genres.add('Upcoming TV Shows');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
-        print('Could not parse movies');
+        print('Could not parse movies: ${type}');
         return [];
       } catch (e) {
         print('Error parsing movies: $e');
@@ -167,21 +167,21 @@ class APIRunner {
   Future<List?> searchMovie(String title) async {
     final String search =
         '$urlBase${apiSearch}query=$title';
-    return runAPI(search, 'upcoming', '');
+    return runAPI(search, 'moviesList', '');
   }
 
   // This is for recommended based on the selected movie
   Future<List?> getRecommended(String movieId) async {
     final String recommendedAPI = 
         '$urlBase/movie/$movieId/recommendations';
-    return runAPI(recommendedAPI, 'upcoming', '');
+    return runAPI(recommendedAPI, 'moviesList', '');
   }
 
   // This is the similar mob
   Future<List?> getSimilar(String movieId) async {
     final String similarAPI = 
         '$urlBase/movie/$movieId/similar';
-    return runAPI(similarAPI, 'upcoming', '');
+    return runAPI(similarAPI, 'moviesList', '');
   }
 
   Future<String?> getTrailerKey(String movieId) async {

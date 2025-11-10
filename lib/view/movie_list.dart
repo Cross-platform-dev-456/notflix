@@ -16,12 +16,6 @@ class _MovieListState extends State<MovieList> {
   int? moviesCount;
   List? movies;
   List<List?>? moviesTvShows = [];
-  List? horror;
-  List? action;
-  List? adventure;
-  List? mystery;
-  List? documentery;
-  List? animation;
   List<String?>? heroGenres = [];
   String? _selectedValue = 'All';
   List<List> movieGenres = [
@@ -124,23 +118,22 @@ class _MovieListState extends State<MovieList> {
     );
   }
 
-        // for(int i = 0; i < movies![0].genres.length; i++) {
-      // heroGenres?.add(
-      //   await helper?.getGenreByID(movies?[0].genres[i], 'Movies')
-      // );
-
   Future initialize() async {
     moviesTvShows = []; // reset moviesTvShows
     heroGenres = []; // reset hero genres
 
     if(_selectedValue == 'Movies' || _selectedValue == 'All') {
       movies = (await helper?.getUpcoming('Movies'))!;
+      // print(movies![1].genres);
+      // for(int i = 0; i < movies![1].genres.length; i++) {
+      //   heroGenres?.add(await helper?.getGenreByID(movies?[1].genres[i], 'Movies')
+      // );
+    //   }
     }
     else if(_selectedValue == 'TV Shows' ) {
       movies = (await helper?.getUpcoming('TV Shows'))!;
     }
     for(int i = 0; i < movieGenres.length; i++) {
-      print(_selectedValue);
       if(_selectedValue == 'Movies' || _selectedValue == 'All') {
         moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 
       }
@@ -154,11 +147,6 @@ class _MovieListState extends State<MovieList> {
         moviesCount = 20; // movies?.length;
         movies = movies;
         moviesTvShows = moviesTvShows;
-        // action = action;
-        // adventure = adventure;
-        // mystery = mystery;
-        // documentery = documentery;
-        // animation = animation;
       },
     );
   }
@@ -225,7 +213,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('${movieGroup[0]}', style: TextStyle(
+          child: Text('${movieGroup[0].genres[movieGroup[0].genres.length-1]}', style: TextStyle(
             fontSize: 18,
             )
           )
@@ -234,11 +222,11 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
         Expanded(
           child: 
             ListView.builder(
-              itemCount: (moviesCount == null) ? 0 : moviesCount-1,
+              itemCount: (moviesCount == null) ? 0 : moviesCount,
               scrollDirection: Axis.horizontal,
               itemBuilder: (BuildContext context, int position) {
-                if (movieGroup?[position+1].posterPath != null) {
-                  image = NetworkImage(iconBase + movieGroup?[position+1].posterPath);
+                if (movieGroup?[position].posterPath != null) {
+                  image = NetworkImage(iconBase + movieGroup?[position].posterPath);
                 } else {
                   image = NetworkImage(defaultImage);
                 }
@@ -261,7 +249,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                         onTap: () {
                           MaterialPageRoute route = MaterialPageRoute(
                             builder: (_) =>
-                                MovieDetail(movieGroup?[position+1]),
+                                MovieDetail(movieGroup?[position]),
                           );
                           Navigator.push(context, route);
                         },
@@ -283,7 +271,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                movieGroup?[position+1].title ?? '',
+                                movieGroup?[position].title ?? '',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -292,7 +280,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                '${'Released: ' + (movieGroup?[position+1].releaseDate ?? '')} - Vote: ${movieGroup![position+1].voteAverage}',
+                                '${'Released: ' + (movieGroup?[position].releaseDate ?? '')} - Vote: ${movieGroup![position].voteAverage}',
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -319,8 +307,6 @@ Widget heroMovie({required movie, required context, required genres}) {
   final String iconBase = 'https://image.tmdb.org/t/p/w780/';
   final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
   movie = movie[0];
-
-
 
   NetworkImage image;
   if (movie.posterPath != null) {

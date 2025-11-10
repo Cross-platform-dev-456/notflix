@@ -216,10 +216,10 @@ class _SearchState extends State<Search> {
                 items: [1].map((i) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: (moviesCount == null) ? 0 : moviesCount!-1,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount,
                     itemBuilder: (BuildContext context, int position) {
                       return MovieCard(
-                        movie: movies?[position+1],
+                        movie: movies?[position],
                         iconBase: iconBase,
                         defaultImage: defaultImage,
                       );
@@ -258,10 +258,10 @@ class _SearchState extends State<Search> {
                 items: [1].map((i) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: (moviesCount == null) ? 0 : moviesCount!-1,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount,
                     itemBuilder: (BuildContext context, int position) {
                       return MovieCard(
-                        movie: movies?[position+1],
+                        movie: movies?[position],
                         iconBase: iconBase,
                         defaultImage: defaultImage,
                       );
@@ -308,7 +308,7 @@ class _SearchState extends State<Search> {
         childAspectRatio:
             0.7, // Adjusted for the taller cards with gradient overlay
       ),
-      itemCount: searchCount ?? 0,
+      itemCount: searchCount ?? 0 ,
       itemBuilder: (BuildContext context, int index) {
         return MovieCard(
           movie: searchResults?[index],
