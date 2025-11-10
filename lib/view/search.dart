@@ -216,10 +216,10 @@ class _SearchState extends State<Search> {
                 items: [1].map((i) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: (moviesCount == null) ? 0 : moviesCount,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount!-1,
                     itemBuilder: (BuildContext context, int position) {
                       return MovieCard(
-                        movie: movies?[position],
+                        movie: movies?[position+1],
                         iconBase: iconBase,
                         defaultImage: defaultImage,
                       );
@@ -258,10 +258,10 @@ class _SearchState extends State<Search> {
                 items: [1].map((i) {
                   return ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    itemCount: (moviesCount == null) ? 0 : moviesCount,
+                    itemCount: (moviesCount == null) ? 0 : moviesCount!-1,
                     itemBuilder: (BuildContext context, int position) {
                       return MovieCard(
-                        movie: movies?[position],
+                        movie: movies?[position+1],
                         iconBase: iconBase,
                         defaultImage: defaultImage,
                       );
@@ -277,7 +277,7 @@ class _SearchState extends State<Search> {
   }
 
   Future initialize() async {
-    movies = (await helper?.getUpcoming())!;
+    movies = (await helper?.getUpcoming('Movies'))!;
     setState(() {
       moviesCount = movies?.length;
       movies = movies;
