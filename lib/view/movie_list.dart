@@ -124,15 +124,16 @@ class _MovieListState extends State<MovieList> {
 
     if(_selectedValue == 'Movies' || _selectedValue == 'All') {
       movies = (await helper?.getUpcoming('Movies'))!;
-      // print(movies![1].genres);
+      //print(movies![1].genres);
       // for(int i = 0; i < movies![1].genres.length; i++) {
-      //   heroGenres?.add(await helper?.getGenreByID(movies?[1].genres[i], 'Movies')
-      // );
-    //   }
+      //   heroGenres?.add(await helper?.getGenreByID(movies![1].genres[i], 'Movies'));
+      //   print(heroGenres);
+      // }
     }
     else if(_selectedValue == 'TV Shows' ) {
       movies = (await helper?.getUpcoming('TV Shows'))!;
     }
+
     for(int i = 0; i < movieGenres.length; i++) {
       if(_selectedValue == 'Movies' || _selectedValue == 'All') {
         moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 

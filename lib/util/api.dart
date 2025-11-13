@@ -174,14 +174,14 @@ class APIRunner {
   Future<List?> getRecommended(String movieId) async {
     final String recommendedAPI = 
         '$urlBase/movie/$movieId/recommendations';
-    return runAPI(recommendedAPI, 'moviesList', '');
+    return runAPI(recommendedAPI, 'movieGenre', '');
   }
 
   // This is the similar mob
   Future<List?> getSimilar(String movieId) async {
     final String similarAPI = 
         '$urlBase/movie/$movieId/similar';
-    return runAPI(similarAPI, 'moviesList', '');
+    return runAPI(similarAPI, 'movieGenre', '');
   }
 
   Future<String?> getTrailerKey(String movieId) async {

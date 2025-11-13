@@ -155,7 +155,7 @@ class _SearchState extends State<Search> {
                 search(text);
               }
             },
-            style: TextStyle(color: Colors.white, fontSize: 20.0),
+            style: TextStyle(color: Colors.black, fontSize: 20.0),
             decoration: InputDecoration(
               hintText: "Search For Movies",
               suffixIcon: _searchController.text.isNotEmpty
@@ -308,7 +308,7 @@ class _SearchState extends State<Search> {
         childAspectRatio:
             0.7, // Adjusted for the taller cards with gradient overlay
       ),
-      itemCount: searchCount ?? 0 ,
+      itemCount: searchCount ?? 0,
       itemBuilder: (BuildContext context, int index) {
         return MovieCard(
           movie: searchResults?[index],
