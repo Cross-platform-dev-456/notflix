@@ -68,7 +68,7 @@ class TvShowList extends TvShow {
 
   TvShowList.fromJson(Map<String, dynamic> parsedJson) 
   : super.fromJson(parsedJson) {
-    genres = parsedJson['genres'] as List? ?? [];
+    genres = parsedJson['genre_ids'] as List? ?? [];
   }
 
 }

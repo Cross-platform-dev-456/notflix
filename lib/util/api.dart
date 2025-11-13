@@ -53,6 +53,7 @@ class APIRunner {
         }
         else if(type == 'tvList') {
           movies = moviesMap.map((i) => TvShowList.fromJson(i)).toList();
+          print(movies[0].genres);
           movies[0].genres.add('Upcoming TV Shows');
           print('Successfully parsed ${movies.length} movies');
           return movies;
@@ -132,6 +133,7 @@ class APIRunner {
   Future<String?> getGenreByID(String id, type) async {
     String? genre = 'Genre Not Found';
     String genreUrl;
+    print("genre id: $id");
     if(type == 'Movies') {
       genreUrl = '$urlBase/genre/movie/list?$urlLanguage';
     }

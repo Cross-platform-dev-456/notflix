@@ -89,9 +89,9 @@ class _MovieListState extends State<MovieList> {
           SliverToBoxAdapter(
             child: categoriesButton(),
           ),
-          // SliverToBoxAdapter(
-          //   child:heroMovie(movie: movies, context: context, genres: heroGenres)
-          // ),
+          SliverToBoxAdapter(
+            child:heroMovie(movie: movies, context: context, genres: heroGenres)
+          ),
 
           SliverToBoxAdapter(
             child: movieGroup(moviesCount: moviesCount, movieGroup: movies)
@@ -124,14 +124,16 @@ class _MovieListState extends State<MovieList> {
 
     if(_selectedValue == 'Movies' || _selectedValue == 'All') {
       movies = (await helper?.getUpcoming('Movies'))!;
-      //print(movies![1].genres);
-      // for(int i = 0; i < movies![1].genres.length; i++) {
-      //   heroGenres?.add(await helper?.getGenreByID(movies![1].genres[i], 'Movies'));
-      //   print(heroGenres);
-      // }
+      for(int i = 0; i < movies![1].genres.length; i++) {
+        heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'Movies'));
+      }
     }
     else if(_selectedValue == 'TV Shows' ) {
       movies = (await helper?.getUpcoming('TV Shows'))!;
+      print("${movies![0].genres}");
+      for(int i = 0; i < movies![1].genres.length-1; i++) {
+        heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'TV Shows'));
+      }
     }
 
     for(int i = 0; i < movieGenres.length; i++) {
