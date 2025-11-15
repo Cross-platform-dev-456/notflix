@@ -32,8 +32,10 @@ class APIRunner {
       try {
         late var movies = [];
         if(type == 'movieGenres') {
+          print('Parsing movie genres for genre ID: ${genre}');
           movies = moviesMap.map((i) => MovieDiscover.fromJson(i)).toList();
           genre = await getGenreByID(genre, 'Movies'); 
+          print('Movies: ${movies[0].genres}');
           movies[0].genres.add('${await genre} Movies');
           print('Successfully parsed ${movies.length} movies');
           return movies;
@@ -75,14 +77,23 @@ class APIRunner {
     }
   }
 
-  Future<List?> getUpcoming(String? categorie) async {
+  Future<List?> getUpcoming(String? categorie, String? genre) async {
     String upcomingAPI;
+    int currentYear = DateTime.now().year;
+    if(genre == 'All') {
+      genre = '';
+    }
+    else {
+      print('Getting genre ID for genre: $genre');
+      genre = await getIDByGenre(genre!, categorie);
+    }
+
     if(categorie == 'Movies') {
-      upcomingAPI = urlBase + apiUpcoming + urlLanguage;
+      upcomingAPI = '$urlBase$apiDiscover$urlLanguage&primary_release_year=$currentYear&with_genres=$genre&sort_by=popularity.desc';
       return runAPI(upcomingAPI, 'moviesList', '');
     }
     else if(categorie == 'TV Shows') {
-      upcomingAPI = urlBase + apiTvUpcoming + urlLanguage;
+      upcomingAPI = '$urlBase$apiTvDiscover$urlLanguage&primary_release_year=$currentYear&with_genres=$genre&sort_by=popularity.desc';
       return runAPI(upcomingAPI, 'tvList', '');
     }
     
@@ -90,13 +101,13 @@ class APIRunner {
   }
 
   Future<List?> getGenre(String genre, String? catagorie) async {
-    //String? genreId = await getIDByGenre(genre);
+    String? genreId = await getIDByGenre(genre, catagorie);
     if(catagorie == 'Movies') {
-      String genreAPI = '$urlBase${apiDiscover}with_genres=$genre$urlLanguage';
+      String genreAPI = '$urlBase${apiDiscover}with_genres=$genreId$urlLanguage';
       return runAPI(genreAPI, 'movieGenres', genre);
     }
     else if(catagorie == 'TV Shows') {
-      String genreAPI = '$urlBase${apiTvDiscover}with_genres=$genre$urlLanguage';
+      String genreAPI = '$urlBase${apiTvDiscover}with_genres=$genreId$urlLanguage';
       return runAPI(genreAPI, 'tvGenres', genre);
     }
 
@@ -104,10 +115,18 @@ class APIRunner {
   }
 
   //Gets a genre's ID. capitalize first letter in the genre
-  Future<String?> getIDByGenre(String genre) async {
-    String id = '0';
-    final String genreUrl = 
-        '$urlBase/genre/movie/list?$urlLanguage';
+  Future<String?> getIDByGenre(String genre, String? type) async {
+    String id = genre;
+    String genreUrl = '';
+    if(type == 'Movies') {
+      genreUrl = '$urlBase/genre/movie/list?$urlLanguage';
+    }
+    else if(type == 'TV Shows') {
+      genreUrl = '$urlBase/genre/tv/list?$urlLanguage';
+    }
+    else {
+      return id;
+    }
 
     http.Response result = await http.get(
       Uri.parse(genreUrl),
@@ -118,7 +137,6 @@ class APIRunner {
     );
     if (result.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(result.body);
-      //print(jsonResponse);
       for(int i = 0; i < jsonResponse['genres'].length; i++) {
         if(jsonResponse['genres'][i]['name'] == genre) {
           id = jsonResponse['genres'][i]['id'].toString();
@@ -133,7 +151,6 @@ class APIRunner {
   Future<String?> getGenreByID(String id, type) async {
     String? genre = 'Genre Not Found';
     String genreUrl;
-    print("genre id: $id");
     if(type == 'Movies') {
       genreUrl = '$urlBase/genre/movie/list?$urlLanguage';
     }
@@ -154,10 +171,9 @@ class APIRunner {
     );
     if (result.statusCode == HttpStatus.ok) {
       final jsonResponse = json.decode(result.body);
-      //print(jsonResponse);
       for(int i = 0; i < jsonResponse['genres'].length; i++) {
         if(jsonResponse['genres'][i]['id'] == int.parse(id)) {
-
+          
           genre = jsonResponse['genres'][i]['name'];
         }
       }

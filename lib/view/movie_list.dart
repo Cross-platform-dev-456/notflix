@@ -17,7 +17,8 @@ class _MovieListState extends State<MovieList> {
   List? movies;
   List<List?>? moviesTvShows = [];
   List<String?>? heroGenres = [];
-  String? _selectedValue = 'All';
+  String? _typeValue = 'All';
+  String? _genreValue = 'All';
   List<List> movieGenres = [
     ['28', 'Action'],
     ['12', 'Adventure'],
@@ -87,7 +88,13 @@ class _MovieListState extends State<MovieList> {
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: categoriesButton(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  categoriesButton(),
+                  genresButton()
+                ],
+              ),
           ),
           SliverToBoxAdapter(
             child:heroMovie(movie: movies, context: context, genres: heroGenres)
@@ -122,27 +129,41 @@ class _MovieListState extends State<MovieList> {
     moviesTvShows = []; // reset moviesTvShows
     heroGenres = []; // reset hero genres
 
-    if(_selectedValue == 'Movies' || _selectedValue == 'All') {
-      movies = (await helper?.getUpcoming('Movies'))!;
-      for(int i = 0; i < movies![1].genres.length; i++) {
+    if(_typeValue == 'Movies' || _typeValue == 'All') {
+      movies = (await helper?.getUpcoming('Movies', _genreValue))!;
+      for(int i = 0; i < movies![0].genres.length-1; i++) {
+        print('${movies![0].genres[i]}');
         heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'Movies'));
       }
     }
-    else if(_selectedValue == 'TV Shows' ) {
-      movies = (await helper?.getUpcoming('TV Shows'))!;
-      print("${movies![0].genres}");
-      for(int i = 0; i < movies![1].genres.length-1; i++) {
+    else if(_typeValue == 'TV Shows') {
+      movies = (await helper?.getUpcoming('TV Shows', _genreValue))!;
+      for(int i = 0; i < movies![0].genres.length-1; i++) {
         heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'TV Shows'));
       }
     }
 
-    for(int i = 0; i < movieGenres.length; i++) {
-      if(_selectedValue == 'Movies' || _selectedValue == 'All') {
-        moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 
+    if(_genreValue == 'All') {
+      for(int i = 0; i < movieGenres.length; i++) {
+        if(_typeValue == 'Movies' || _typeValue == 'All') {
+          moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 
+        }
+        if((_typeValue == 'TV Shows' || _typeValue == 'All') && i < tvGenres.length) {
+          moviesTvShows?.add(await helper?.getGenre(tvGenres[i][0], 'TV Shows')); 
+        }
       }
-      if((_selectedValue == 'TV Shows' || _selectedValue == 'All') && i <= 15) {
-        moviesTvShows?.add(await helper?.getGenre(tvGenres[i][0], 'TV Shows')); 
-      }
+    }
+    else {
+      if(_typeValue == 'Movies' || _typeValue == 'All') {
+          int movieGenreIndex = movieGenres.indexWhere((genre) => genre[1] == _genreValue);
+          moviesTvShows?.add(await helper?.getGenre(movieGenres[movieGenreIndex][0], 'Movies')); 
+        }
+        if(_typeValue == 'TV Shows' || _typeValue == 'All') {
+          int tvGenreIndex = tvGenres.indexWhere((genre) => genre[1] == _genreValue);
+
+          moviesTvShows?.add(await helper?.getGenre(tvGenres[tvGenreIndex][0], 'TV Shows')); 
+        }
+
     }
 
     setState(
@@ -165,13 +186,13 @@ class _MovieListState extends State<MovieList> {
         Padding(
           padding:  EdgeInsets.only(right: 16),
           child:
-            Text('Browse by Categories')
+            Text('Browse by Categories:')
         ),
         Padding( 
           padding:  EdgeInsets.only(right: 16),
           child:
             DropdownButton<String>(
-              value: _selectedValue,
+              value: _typeValue,
               hint: const Text('Categories'),
               items: _options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
@@ -180,7 +201,53 @@ class _MovieListState extends State<MovieList> {
               }).toList(),
             onChanged: (String? newValue) {
               setState(() {
-                _selectedValue = newValue; // Update the state with the new selection
+                _typeValue = newValue; // Update the state with the new selection
+                _genreValue = 'All'; // Reset genre when category changes
+                initialize();
+              });
+            },
+          ),
+        )
+      ])
+  );
+}
+
+Widget genresButton() {
+  List<String> _options = ['All'];
+  if(_typeValue == 'All') {
+    _options = ['All'];
+  }
+  else if(_typeValue == 'Movies') {
+    _options = ['All'] + movieGenres.map((genre) => genre[1] as String).toList();
+  }
+  else {
+    _options = ['All'] + tvGenres.map((genre) => genre[1] as String).toList();
+  }
+
+  return Container(
+    padding: EdgeInsets.symmetric(vertical: 4.0),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Padding(
+          padding:  EdgeInsets.only(right: 16),
+          child:
+            Text('Browse by Genres:')
+        ),
+        Padding( 
+          padding:  EdgeInsets.only(right: 16),
+          child:
+            DropdownButton<String>(
+              value: _genreValue,
+              hint: const Text('Genres'),
+              items: _options.map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),);
+              }).toList(),
+            onChanged: (String? newValue) {
+              setState(() {
+                _genreValue = newValue; // Update the state with the new selection
                 initialize();
               });
             },

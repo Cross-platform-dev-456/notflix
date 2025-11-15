@@ -277,7 +277,7 @@ class _SearchState extends State<Search> {
   }
 
   Future initialize() async {
-    movies = (await helper?.getUpcoming('Movies'))!;
+    movies = (await helper?.getUpcoming('Movies', ''))!;
     setState(() {
       moviesCount = movies?.length;
       movies = movies;
