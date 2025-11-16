@@ -14,10 +14,12 @@ class APIRunner {
   final String apiTvDiscover = '/discover/tv?';
   final String urlLanguage = '?language=en-US';
 
-  
+
   final String apiUpcoming = '/movie/upcoming?';
   final String apiTvUpcoming = '/tv/airing_today?';
 
+  // categorie is either 'Movies' or 'TV Shows'
+  // genres is being pushed from the movie_list page. Upcoming is being used as a 'default' value
   Future<List?> runAPI(API, categorie, genre) async {
     http.Response result = await http.get(
       Uri.parse(API),
@@ -66,6 +68,8 @@ class APIRunner {
     }
   }
 
+  // categorie is either 'Movies' or 'TV Shows'
+  // genres is being pushed from the movie_list page. All is being used as a 'default' value
   Future<List?> getUpcoming(String? categorie, String? genre) async {
     String upcomingAPI;
     int currentYear = DateTime.now().year;
@@ -102,7 +106,7 @@ class APIRunner {
     return [];
   }
 
-  //Gets a genre's ID. capitalize first letter in the genre
+  //Gets a genre's ID. capitalize first letter in the genre, movie_list page has the lists of genres for both movies and tv shows
   Future<String?> getIDByGenre(String genre, String? categorie) async {
     String id = genre;
     String genreUrl = '';
@@ -135,7 +139,7 @@ class APIRunner {
     return id;
   }
 
-  //Gets a genre's ID. capitalize first letter in the genre
+  //Gets a genre's ID.
   Future<String?> getGenreByID(String id, categorie) async {
     String? genre = 'Genre Not Found';
     String genreUrl;
