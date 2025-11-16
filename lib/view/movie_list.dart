@@ -38,7 +38,7 @@ class _MovieListState extends State<MovieList> {
     ['10770','TV Movie'],
     ['53','Thriller'],
     ['10752', 'War'],
-    ['37', ' Western']
+    //['37', ' Western']
   ];
   List<List> tvGenres = [
     ['10759', 'Action & Adventure'],
