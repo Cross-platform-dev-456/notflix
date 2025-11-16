@@ -38,7 +38,7 @@ class _MovieListState extends State<MovieList> {
     ['10770','TV Movie'],
     ['53','Thriller'],
     ['10752', 'War'],
-    //['37', ' Western']
+    ['37', 'Western']
   ];
   List<List> tvGenres = [
     ['10759', 'Action & Adventure'],
@@ -132,7 +132,6 @@ class _MovieListState extends State<MovieList> {
     if(_typeValue == 'Movies' || _typeValue == 'All') {
       movies = (await helper?.getUpcoming('Movies', _genreValue))!;
       for(int i = 0; i < movies![0].genres.length-1; i++) {
-        print('${movies![0].genres[i]}');
         heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'Movies'));
       }
     }
@@ -449,3 +448,14 @@ Widget heroMovie({required movie, required context, required genres}) {
     ),
   );
 }
+
+class LoadingScreen extends StatelessWidget {
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(), 
+          ),
+        );
+      }
+    }

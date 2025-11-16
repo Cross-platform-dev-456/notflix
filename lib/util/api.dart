@@ -9,14 +9,14 @@ class APIRunner {
   final String api_key = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0NmQ4OGZkYzE0ZmMxMDdjNzQxZTYyNGFiYTNjYWMzYiIsIm5iZiI6MTc1NzM1NjMyMS41OTEsInN1YiI6IjY4YmYyMTIxZDliZTBjZGYzNjk4YzlhNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.fl3rvzIwWU87nda24DWaLeIUPYiUBCgzBhENIKipeEY';
   final String urlBase = 'https://api.themoviedb.org/3';
 
-  //final String apiUpcoming = '/movie/upcoming?';
   final String apiDiscover = '/discover/movie?';
   final String apiSearch = '/search/movie?';
-  final String apiTvUpcoming = '/tv/airing_today?';
   final String apiTvDiscover = '/discover/tv?';
-
   final String urlLanguage = '?language=en-US';
+
   
+  final String apiUpcoming = '/movie/upcoming?';
+  final String apiTvUpcoming = '/tv/airing_today?';
 
   Future<List?> runAPI(API, categorie, genre) async {
     http.Response result = await http.get(
@@ -73,7 +73,6 @@ class APIRunner {
       genre = '';
     }
     else {
-      print('Getting genre ID for genre: $genre');
       genre = await getIDByGenre(genre!, categorie);
     }
 
@@ -174,7 +173,7 @@ class APIRunner {
   Future<List?> searchMovie(String title) async {
     final String search =
         '$urlBase${apiSearch}query=$title';
-    return runAPI(search, 'Movies', '');
+    return runAPI(search, 'Movies', 'Upcoming');
   }
 
   // This is for recommended based on the selected movie
