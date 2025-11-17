@@ -120,10 +120,17 @@ class _ProfileState extends State<Profile> {
     return Scaffold(
       appBar : AppBar(
         title: Text("Profile"),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
