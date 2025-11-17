@@ -336,7 +336,8 @@ class _SearchState extends State<Search> {
   testDb() async {
     try {
       db = DbConnection();
-      db?.getUserList();
+      final users = await db?.getUserList();
+      print("Got users: $users");
       //await db?.insertUserTest();
     } catch (e) {
       print(e.toString());

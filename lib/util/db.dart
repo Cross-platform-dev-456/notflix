@@ -3,33 +3,51 @@ import 'package:pocketbase/pocketbase.dart';
 final pb = PocketBase('http://127.0.0.1:8090');
 class DbConnection {
 
-  Future<void> getUserList() async {
+  Future<List?> getUserList() async {
     try {
-    // Authenticate first (this sets pb.authStore.token)
-    final authData = await pb.collection('users').authWithPassword(
-      'test@user.com',
-      'password123',
-    );
-    
-    print("Auth successful!");
-    print("User ID: ${authData.record?.id}");
-    print("Token: ${pb.authStore.token}");
-    
-    // Now fetch the list (authenticated request will include token)
-    final result = await pb.collection('users').getList(
-      page: 1,
-      perPage: 30,
-    );
-    
-    print("Records found: ${result.items.length}");
-    for (var record in result.items) {
-      print(record.toJson());
+      // Authenticate first (this sets pb.authStore.token)
+      final authData = await pb.collection('user').getList();
+      
+      print(authData);
+      
+      // Now fetch the list (authenticated request will include token)
+      final result = await pb.collection('users').getList(
+        page: 1,
+        perPage: 30,
+      );
+      
+      print("Records found: ${result.items.length}");
+      for (var record in result.items) {
+        print(record.toJson());
+      }
+      
+      return result.items;
+    } catch (e) {
+      print("Error: $e");
+      return null;
     }
-  } catch (e) {
-    print("Error: $e");
-  }
   }
 
+  Future<bool> logInUser(String email, String password) async {
+    // Pocket base will automatically handle 
+    bool loggedIn = false;
+    try{
+      final authData = await pb.collection('users').authWithPassword(
+        email, 
+        password
+      );
+      loggedIn = true;
+      print("User logged in with ID: ${authData.record?.id}");
+    } catch(e) {
+      print("Log in failed");
+    }
+    return loggedIn;
+  }
+
+  bool checkUserLogStatus() {
+    if (pb.authStore.isValid) { return true; }
+    return false;
+  }
 /*
 
   Future<RecordAuth?> _logInUser (String email, String password) async {
