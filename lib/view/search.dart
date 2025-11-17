@@ -281,7 +281,7 @@ class _SearchState extends State<Search> {
   }
 
   Future initialize() async {
-    movies = (await helper?.getUpcoming())!;
+    movies = (await helper?.getUpcoming('Movies', ''))!;
     setState(() {
       moviesCount = movies?.length;
       movies = movies;
@@ -306,7 +306,7 @@ class _SearchState extends State<Search> {
     return GridView.builder(
       padding: EdgeInsets.all(8.0),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2, // Reduced from 4 to 2 for better card visibility
+        crossAxisCount: 6, // Reduced from 4 to 2 for better card visibility
         crossAxisSpacing: 8.0,
         mainAxisSpacing: 8.0,
         childAspectRatio:
