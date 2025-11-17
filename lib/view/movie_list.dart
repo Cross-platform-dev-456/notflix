@@ -16,14 +16,9 @@ class _MovieListState extends State<MovieList> {
   int? moviesCount;
   List? movies;
   List<List?>? moviesTvShows = [];
-  List? horror;
-  List? action;
-  List? adventure;
-  List? mystery;
-  List? documentery;
-  List? animation;
   List<String?>? heroGenres = [];
-  String? _selectedValue = 'All';
+  String? _typeValue = 'All';
+  String? _genreValue = 'All';
   List<List> movieGenres = [
     ['28', 'Action'],
     ['12', 'Adventure'],
@@ -43,7 +38,7 @@ class _MovieListState extends State<MovieList> {
     ['10770','TV Movie'],
     ['53','Thriller'],
     ['10752', 'War'],
-    ['37', ' Western']
+    ['37', 'Western']
   ];
   List<List> tvGenres = [
     ['10759', 'Action & Adventure'],
@@ -93,11 +88,17 @@ class _MovieListState extends State<MovieList> {
       body: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
-            child: categoriesButton(),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  categoriesButton(),
+                  genresButton()
+                ],
+              ),
           ),
-          // SliverToBoxAdapter(
-          //   child:heroMovie(movie: movies, context: context, genres: heroGenres)
-          // ),
+          SliverToBoxAdapter(
+            child:heroMovie(movie: movies, context: context, genres: heroGenres)
+          ),
 
           SliverToBoxAdapter(
             child: movieGroup(moviesCount: moviesCount, movieGroup: movies)
@@ -133,20 +134,40 @@ class _MovieListState extends State<MovieList> {
     moviesTvShows = []; // reset moviesTvShows
     heroGenres = []; // reset hero genres
 
-    if(_selectedValue == 'Movies' || _selectedValue == 'All') {
-      movies = (await helper?.getUpcoming('Movies'))!;
-    }
-    else if(_selectedValue == 'TV Shows' ) {
-      movies = (await helper?.getUpcoming('TV Shows'))!;
-    }
-    for(int i = 0; i < movieGenres.length; i++) {
-      print(_selectedValue);
-      if(_selectedValue == 'Movies' || _selectedValue == 'All') {
-        moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 
+    if(_typeValue == 'Movies' || _typeValue == 'All') {
+      movies = (await helper?.getUpcoming('Movies', _genreValue))!;
+      for(int i = 0; i < movies![0].genres.length-1; i++) {
+        heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'Movies'));
       }
-      if((_selectedValue == 'TV Shows' || _selectedValue == 'All') && i <= 15) {
-        moviesTvShows?.add(await helper?.getGenre(tvGenres[i][0], 'TV Shows')); 
+    }
+    else if(_typeValue == 'TV Shows') {
+      movies = (await helper?.getUpcoming('TV Shows', _genreValue))!;
+      for(int i = 0; i < movies![0].genres.length-1; i++) {
+        heroGenres?.add(await helper?.getGenreByID(movies![0].genres[i].toString(), 'TV Shows'));
       }
+    }
+
+    if(_genreValue == 'All') {
+      for(int i = 0; i < movieGenres.length; i++) {
+        if(_typeValue == 'Movies' || _typeValue == 'All') {
+          moviesTvShows?.add(await helper?.getGenre(movieGenres[i][0], 'Movies')); 
+        }
+        if((_typeValue == 'TV Shows' || _typeValue == 'All') && i < tvGenres.length) {
+          moviesTvShows?.add(await helper?.getGenre(tvGenres[i][0], 'TV Shows')); 
+        }
+      }
+    }
+    else {
+      if(_typeValue == 'Movies' || _typeValue == 'All') {
+          int movieGenreIndex = movieGenres.indexWhere((genre) => genre[1] == _genreValue);
+          moviesTvShows?.add(await helper?.getGenre(movieGenres[movieGenreIndex][0], 'Movies')); 
+        }
+        if(_typeValue == 'TV Shows' || _typeValue == 'All') {
+          int tvGenreIndex = tvGenres.indexWhere((genre) => genre[1] == _genreValue);
+
+          moviesTvShows?.add(await helper?.getGenre(tvGenres[tvGenreIndex][0], 'TV Shows')); 
+        }
+
     }
 
     setState(
@@ -154,17 +175,61 @@ class _MovieListState extends State<MovieList> {
         moviesCount = 20; // movies?.length;
         movies = movies;
         moviesTvShows = moviesTvShows;
-        // action = action;
-        // adventure = adventure;
-        // mystery = mystery;
-        // documentery = documentery;
-        // animation = animation;
       },
     );
   }
 
   Widget categoriesButton() {
   final List<String> _options = ['All', 'Movies', 'TV Shows'];
+
+  return SizedBox(
+    height: 100,
+    child: Container(
+      padding: EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding:  EdgeInsets.only(right: 16),
+            child:
+              Text('Categories:')
+          ),
+          Padding( 
+            padding:  EdgeInsets.only(right: 16),
+            child:
+              DropdownButton<String>(
+                value: _typeValue,
+                hint: const Text('Categories'),
+                items: _options.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),);
+                }).toList(),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _typeValue = newValue; // Update the state with the new selection
+                  _genreValue = 'All'; // Reset genre when category changes
+                  initialize();
+                });
+              },
+            ),
+          )
+        ])
+    ),
+  );
+}
+
+Widget genresButton() {
+  List<String> _options = ['All'];
+  if(_typeValue == 'All') {
+    _options = ['All'];
+  }
+  else if(_typeValue == 'Movies') {
+    _options = ['All'] + movieGenres.map((genre) => genre[1] as String).toList();
+  }
+  else {
+    _options = ['All'] + tvGenres.map((genre) => genre[1] as String).toList();
+  }
 
   return Container(
     padding: EdgeInsets.symmetric(vertical: 4.0),
@@ -174,14 +239,14 @@ class _MovieListState extends State<MovieList> {
         Padding(
           padding:  EdgeInsets.only(right: 16),
           child:
-            Text('Browse by Categories')
+            Text('Genres:')
         ),
         Padding( 
           padding:  EdgeInsets.only(right: 16),
           child:
             DropdownButton<String>(
-              value: _selectedValue,
-              hint: const Text('Categories'),
+              value: _genreValue,
+              hint: const Text('Genres'),
               items: _options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
@@ -189,7 +254,7 @@ class _MovieListState extends State<MovieList> {
               }).toList(),
             onChanged: (String? newValue) {
               setState(() {
-                _selectedValue = newValue; // Update the state with the new selection
+                _genreValue = newValue; // Update the state with the new selection
                 initialize();
               });
             },
@@ -225,7 +290,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('${movieGroup[0]}', style: TextStyle(
+          child: Text('${movieGroup[0].genres[movieGroup[0].genres.length-1]}', style: TextStyle(
             fontSize: 18,
             )
           )
@@ -234,11 +299,11 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
         Expanded(
           child: 
             ListView.builder(
-              itemCount: (moviesCount == null) ? 0 : moviesCount-1,
+              itemCount: (moviesCount == null) ? 0 : moviesCount,
               scrollDirection: Axis.horizontal,
               itemBuilder: (BuildContext context, int position) {
-                if (movieGroup?[position+1].posterPath != null) {
-                  image = NetworkImage(iconBase + movieGroup?[position+1].posterPath);
+                if (movieGroup?[position].posterPath != null) {
+                  image = NetworkImage(iconBase + movieGroup?[position].posterPath);
                 } else {
                   image = NetworkImage(defaultImage);
                 }
@@ -261,7 +326,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                         onTap: () {
                           MaterialPageRoute route = MaterialPageRoute(
                             builder: (_) =>
-                                MovieDetail(movieGroup?[position+1]),
+                                MovieDetail(movieGroup?[position]),
                           );
                           Navigator.push(context, route);
                         },
@@ -283,7 +348,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                movieGroup?[position+1].title ?? '',
+                                movieGroup?[position].title ?? '',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
@@ -292,7 +357,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                               ),
                               SizedBox(height: 4),
                               Text(
-                                '${'Released: ' + (movieGroup?[position+1].releaseDate ?? '')} - Vote: ${movieGroup![position+1].voteAverage}',
+                                '${'Released: ' + (movieGroup?[position].releaseDate ?? '')} - Vote: ${movieGroup![position].voteAverage}',
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -319,8 +384,6 @@ Widget heroMovie({required movie, required context, required genres}) {
   final String iconBase = 'https://image.tmdb.org/t/p/w780/';
   final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
   movie = movie[0];
-
-
 
   NetworkImage image;
   if (movie.posterPath != null) {
@@ -393,3 +456,14 @@ Widget heroMovie({required movie, required context, required genres}) {
     ),
   );
 }
+
+class LoadingScreen extends StatelessWidget {
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(), 
+          ),
+        );
+      }
+    }
