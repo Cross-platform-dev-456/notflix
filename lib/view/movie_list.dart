@@ -2,8 +2,11 @@ import 'dart:js_interop';
 
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
+import 'package:notflix/util/db.dart';
 import 'movie_detail.dart';
 import 'search.dart';
+import 'user_page/log_in.dart';
+import 'user_page/profile.dart';
 
 class MovieList extends StatefulWidget {
   @override
@@ -13,6 +16,8 @@ class MovieList extends StatefulWidget {
 class _MovieListState extends State<MovieList> {
   String? result;
   APIRunner? helper;
+  DbConnection? db;
+
   int? moviesCount;
   List? movies;
   List<List?>? moviesTvShows = [];
@@ -82,8 +87,40 @@ class _MovieListState extends State<MovieList> {
               ),
             );
           },
-
         ),
+        IconButton(
+          icon: Icon(Icons.settings),
+          onPressed: () async => print("Settings!"),
+        ),
+        IconButton(
+          onPressed: () {
+            // Check to see if logged in or not
+            try{
+              db = new DbConnection();
+
+              final isLogged = db?.checkUserLogStatus();
+
+              if(isLogged!){
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                  builder: (context) => Profile(),
+                  )
+                );
+              } else {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                  builder: (context) => LogIn(),
+                  )
+                );
+              }
+
+            } catch (e) {
+              print("Could not connect to the db");
+            }
+
+            
+          } , 
+          icon: Icon(Icons.person))
       ]),      
       body: CustomScrollView(
         slivers: [

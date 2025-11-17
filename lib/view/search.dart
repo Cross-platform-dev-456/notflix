@@ -142,7 +142,7 @@ class _SearchState extends State<Search> {
   Widget build(BuildContext context) {
     // pop scope prevents multfinger gestures from happening on the page
     return PopScope(
-      canPop: false,
+      canPop: true,
       child: Scaffold(
         appBar: AppBar(
           title: TextFormField(
@@ -155,7 +155,7 @@ class _SearchState extends State<Search> {
                 search(text);
               }
             },
-            style: TextStyle(color: Colors.black, fontSize: 20.0),
+            style: TextStyle(color: Colors.white, fontSize: 20.0),
             decoration: InputDecoration(
               hintText: "Search For Movies",
               suffixIcon: _searchController.text.isNotEmpty
@@ -171,15 +171,13 @@ class _SearchState extends State<Search> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.home),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
-            IconButton(
               icon: Icon(Icons.settings),
               onPressed: () async => await testDb(),
             ),
+            IconButton(
+              icon: Icon(Icons.person),
+              onPressed: () async => await testDb(),
+            )
           ],
         ),
         body: isSearching ? _buildSearchResults() : defautContent(),
@@ -332,7 +330,9 @@ class _SearchState extends State<Search> {
   testDb() async {
     try {
       db = DbConnection();
-      await db?.insertUserTest();
+      final users = await db?.getUserList();
+      print("Got users: $users");
+      //await db?.insertUserTest();
     } catch (e) {
       print(e.toString());
       print("Could not test db");
