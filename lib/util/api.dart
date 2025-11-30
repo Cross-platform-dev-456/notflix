@@ -51,7 +51,7 @@ class APIRunner {
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
-        print('Could not parse movies: ${categorie}');
+        print('Could not parse movies: $categorie');
         return [];
       } catch (e) {
         print('Error parsing movies: $e');

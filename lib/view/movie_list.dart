@@ -1,5 +1,3 @@
-import 'dart:js_interop';
-
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
 import 'package:notflix/util/db.dart';
@@ -9,6 +7,8 @@ import 'user_page/log_in.dart';
 import 'user_page/profile.dart';
 
 class MovieList extends StatefulWidget {
+  const MovieList({super.key});
+
   @override
   _MovieListState createState() => _MovieListState();
 }
@@ -24,6 +24,7 @@ class _MovieListState extends State<MovieList> {
   List<String?>? heroGenres = [];
   String? _typeValue = 'All';
   String? _genreValue = 'All';
+  bool isLoading = true;
   List<List> movieGenres = [
     ['28', 'Action'],
     ['12', 'Adventure'],
@@ -76,6 +77,15 @@ class _MovieListState extends State<MovieList> {
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return Scaffold(
+        appBar: AppBar(title: Text('Notflix')),
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+    
     return Scaffold(
       appBar: AppBar(title: searchBar, actions: <Widget>[
         IconButton(
@@ -96,7 +106,7 @@ class _MovieListState extends State<MovieList> {
           onPressed: () {
             // Check to see if logged in or not
             try{
-              db = new DbConnection();
+              db = DbConnection();
 
               final isLogged = db?.checkUserLogStatus();
 
@@ -212,12 +222,13 @@ class _MovieListState extends State<MovieList> {
         moviesCount = 20; // movies?.length;
         movies = movies;
         moviesTvShows = moviesTvShows;
+        isLoading = false;
       },
     );
   }
 
   Widget categoriesButton() {
-  final List<String> _options = ['All', 'Movies', 'TV Shows'];
+  final List<String> options = ['All', 'Movies', 'TV Shows'];
 
   return SizedBox(
     height: 100,
@@ -237,7 +248,7 @@ class _MovieListState extends State<MovieList> {
               DropdownButton<String>(
                 value: _typeValue,
                 hint: const Text('Categories'),
-                items: _options.map<DropdownMenuItem<String>>((String value) {
+                items: options.map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
                     child: Text(value),);
@@ -246,8 +257,9 @@ class _MovieListState extends State<MovieList> {
                 setState(() {
                   _typeValue = newValue; // Update the state with the new selection
                   _genreValue = 'All'; // Reset genre when category changes
-                  initialize();
+                  isLoading = true;
                 });
+                initialize();
               },
             ),
           )
@@ -257,15 +269,15 @@ class _MovieListState extends State<MovieList> {
 }
 
 Widget genresButton() {
-  List<String> _options = ['All'];
+  List<String> options = ['All'];
   if(_typeValue == 'All') {
-    _options = ['All'];
+    options = ['All'];
   }
   else if(_typeValue == 'Movies') {
-    _options = ['All'] + movieGenres.map((genre) => genre[1] as String).toList();
+    options = ['All'] + movieGenres.map((genre) => genre[1] as String).toList();
   }
   else {
-    _options = ['All'] + tvGenres.map((genre) => genre[1] as String).toList();
+    options = ['All'] + tvGenres.map((genre) => genre[1] as String).toList();
   }
 
   return Container(
@@ -284,7 +296,7 @@ Widget genresButton() {
             DropdownButton<String>(
               value: _genreValue,
               hint: const Text('Genres'),
-              items: _options.map<DropdownMenuItem<String>>((String value) {
+              items: options.map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),);
@@ -292,8 +304,9 @@ Widget genresButton() {
             onChanged: (String? newValue) {
               setState(() {
                 _genreValue = newValue; // Update the state with the new selection
-                initialize();
+                isLoading = true;
               });
+              initialize();
             },
           ),
         )
@@ -320,7 +333,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
   
   NetworkImage image;
 
-  return Container(
+  return SizedBox(
     height: 400, 
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,7 +366,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4),
                       image: DecorationImage(
-                        image: image!,
+                        image: image,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -479,7 +492,7 @@ Widget heroMovie({required movie, required context, required genres}) {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  '${genres}',
+                  '$genres',
                   style: TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -495,6 +508,8 @@ Widget heroMovie({required movie, required context, required genres}) {
 }
 
 class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
+
       @override
       Widget build(BuildContext context) {
         return Scaffold(

@@ -98,6 +98,9 @@ class MovieCard extends StatelessWidget {
 }
 
 class Profile extends StatefulWidget {
+  const Profile({super.key});
+
+  @override
   State<StatefulWidget> createState() => _ProfileState();
 }
 
@@ -114,6 +117,7 @@ class _ProfileState extends State<Profile> {
       'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
 
 
+  @override
   Widget build(BuildContext context) {
     helper = APIRunner();
 

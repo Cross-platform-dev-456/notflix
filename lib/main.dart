@@ -15,8 +15,7 @@ class MyMovies extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFF141414), // Netflix black
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFFE50914), // Netflix red
-          secondary: Color(0xFFB81D24), // dark red accent
-          background: Color(0xFF141414),
+          secondary: Color(0xFFB81D24),
           surface: Color(0xFF181818),
         ),
         appBarTheme: const AppBarTheme(

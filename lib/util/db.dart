@@ -37,7 +37,7 @@ class DbConnection {
         password
       );
       loggedIn = true;
-      print("User logged in with ID: ${authData.record?.id}");
+      print("User logged in with ID: ${authData.record.id}");
     } catch(e) {
       print("Log in failed");
     }

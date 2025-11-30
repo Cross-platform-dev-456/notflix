@@ -5,6 +5,9 @@ import 'package:notflix/util/db.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 
 class LogIn extends StatefulWidget {
+  const LogIn({super.key});
+
+  @override
   State<StatefulWidget> createState() => _LogInState();
 }
 
@@ -59,6 +62,7 @@ class _LogInState extends State<LogIn> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar : AppBar(
