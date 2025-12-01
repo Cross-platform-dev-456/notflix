@@ -27,7 +27,7 @@ Notflix is a movie and TV show discovery app that allows users to:
 
 ## Documentation Sections
 
-### [Architecture Overview](/docs/architecture/)
+### [Architecture Overview](/notflix/docs/architecture/)
 Comprehensive technical documentation covering:
 - System architecture and design patterns
 - Technology stack
@@ -36,7 +36,7 @@ Comprehensive technical documentation covering:
 - Development setup
 - Testing strategy
 
-### [User Manual](/docs/user-manual/)
+### [User Manual](/notflix/docs/user-manual/)
 Complete user guide with:
 - Getting started instructions
 - Feature walkthroughs
@@ -46,12 +46,12 @@ Complete user guide with:
 ## Quick Links
 
 - [GitHub Repository](https://github.com/Cross-platform-dev-456/notflix)
-- [Architecture Documentation](/docs/architecture/)
-- [User Manual](/docs/user-manual/)
+- [Architecture Documentation](/notflix/docs/architecture/)
+- [User Manual](/notflix/docs/user-manual/)
 
 ## Getting Started
 
-To get started with Notflix development, see the [Architecture Overview](/docs/architecture/) for setup instructions and development guidelines.
+To get started with Notflix development, see the [Architecture Overview](/notflix/docs/architecture/) for setup instructions and development guidelines.
 
 ---
 

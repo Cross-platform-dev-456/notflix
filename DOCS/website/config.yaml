@@ -1,4 +1,4 @@
-baseURL: 'https://Cross-platform-dev-456.github.io/'
+baseURL: 'https://Cross-platform-dev-456.github.io/notflix/'
 languageCode: 'en-us'
 title: 'Notflix Documentation'
 theme: 'PaperMod'
@@ -36,19 +36,19 @@ menu:
   main:
     - identifier: home
       name: Home
-      url: /
+      url: /notflix/
       weight: 10
     - identifier: docs
       name: Documentation
       weight: 20
     - identifier: architecture
       name: Architecture
-      url: /docs/architecture/
+      url: /notflix/docs/architecture/
       parent: docs
       weight: 21
     - identifier: user-manual
       name: User Manual
-      url: /docs/user-manual/
+      url: /notflix/docs/user-manual/
       parent: docs
       weight: 22
 
