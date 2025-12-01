@@ -48,3 +48,8 @@ app.*.map.json
 /server/pocketbase/*.log
 # If you don't want to commit binaries, uncomment the next line
 #/server/pocketbase/pocketbase.exe
+
+# Hugo website generated files
+DOCS/website/public/
+DOCS/website/resources/
+DOCS/website/themes/PaperMod/

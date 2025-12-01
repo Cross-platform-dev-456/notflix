@@ -1,0 +1,11 @@
+# Hugo generated files
+public/
+resources/
+
+# Theme directory (cloned by CI)
+themes/PaperMod/
+
+# OS files
+.DS_Store
+Thumbs.db
+

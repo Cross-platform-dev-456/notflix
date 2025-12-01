@@ -1,0 +1,78 @@
+baseURL: 'https://Cross-platform-dev-456.github.io/notflix/'
+languageCode: 'en-us'
+title: 'Notflix Documentation'
+theme: 'PaperMod'
+
+params:
+  env: production
+  title: 'Notflix Documentation'
+  description: 'Documentation for the Notflix cross-platform Flutter application'
+  author: 'Notflix Team'
+  keywords: ['Flutter', 'Notflix', 'Documentation', 'Cross-Platform']
+  
+  # Theme settings
+  ShowReadingTime: true
+  ShowShareButtons: true
+  ShowPostNavLinks: true
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  ShowWordCount: true
+  ShowRssButtonInSectionTermList: true
+  UseHugoToc: true
+  disableSpecial1stPost: false
+  disableScrollToTop: false
+  
+  # Home page settings
+  homeInfoParams:
+    Title: 'Notflix Documentation'
+    Content: 'Welcome to the Notflix documentation site. Browse architecture guides, user tutorials, progress reports, and more.'
+  
+  # Social links
+  socialIcons:
+    - name: github
+      url: 'https://github.com/Cross-platform-dev-456/notflix'
+
+menu:
+  main:
+    - identifier: home
+      name: Home
+      url: /
+      weight: 10
+    - identifier: docs
+      name: Documentation
+      weight: 20
+    - identifier: architecture
+      name: Architecture
+      url: /docs/architecture/
+      parent: docs
+      weight: 21
+    - identifier: user-manual
+      name: User Manual
+      url: /docs/user-manual/
+      parent: docs
+      weight: 22
+    - identifier: progress
+      name: Progress
+      url: /docs/progress/
+      parent: docs
+      weight: 23
+    - identifier: reports
+      name: Reports
+      url: /docs/reports/
+      parent: docs
+      weight: 24
+
+markup:
+  highlight:
+    style: github
+    codeFences: true
+    guessSyntax: true
+    lineNos: true
+    noClasses: false
+
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
