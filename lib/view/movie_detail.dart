@@ -3,6 +3,7 @@ import 'package:notflix/model/movie.dart';
 import 'package:notflix/model/tvShow.dart';
 import 'package:notflix/model/episode.dart';
 import 'package:notflix/util/api.dart';
+import 'package:notflix/view/widgets/watch_list_buttons.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class MovieDetail extends StatefulWidget {
@@ -223,6 +224,35 @@ class _MovieDetailState extends State<MovieDetail> {
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ],
+                    ),
+                  ),
+
+                  // Watch List Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: WatchListButtons(
+                      showId: isTvShow 
+                          ? (widget.item as TvShow).id 
+                          : (widget.item as Movie).id,
+                      showTitle: getTitle(),
+                      showPosterPath: getPosterPath(),
+                      showData: {
+                        'id': isTvShow 
+                            ? (widget.item as TvShow).id 
+                            : (widget.item as Movie).id,
+                        'title': getTitle(),
+                        'poster_path': getPosterPath(),
+                        'vote_average': isTvShow 
+                            ? (widget.item as TvShow).voteAverage 
+                            : (widget.item as Movie).voteAverage,
+                        'release_date': isTvShow 
+                            ? (widget.item as TvShow).releaseDate 
+                            : (widget.item as Movie).releaseDate,
+                        'overview': getOverview(),
+                        'genre_ids': isTvShow 
+                            ? (widget.item as TvShow).genres 
+                            : (widget.item as Movie).genres,
+                      },
                     ),
                   ),
 
