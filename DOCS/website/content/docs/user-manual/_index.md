@@ -1,15 +1,14 @@
 ---
-title: "Notflix User Tutorial"
+title: "User Manual"
 date: 2025-01-01
 draft: false
-weight: 1
 ---
 
-# Notflix User Tutorial
+# Notflix User Manual
 
-**Your Guide to Discovering Movies & TV Shows**
+Your Guide to Discovering Movies & TV Shows
 
-## Welcome to Notflix! 🎬
+## Welcome to Notflix!
 
 Notflix is a movie and TV show discovery app inspired by Netflix.
 
@@ -22,7 +21,7 @@ Notflix is a movie and TV show discovery app inspired by Netflix.
 
 ## Getting Started
 
-**First Steps:**
+### First Steps
 1. Launch the Notflix app
 2. Browse content immediately (no account needed)
 3. Create an account to unlock personalized features:
@@ -30,17 +29,17 @@ Notflix is a movie and TV show discovery app inspired by Netflix.
    - Recently Watched tracking
    - Personalized recommendations
 
-## Home Screen Overview
+## Home Screen
 
-The home screen is your main browsing hub:
+The home screen is your main browsing hub.
 
-**Features:**
+### Features
 - **Hero Movie**: Featured content at the top
 - **Genre Rows**: Horizontal scrolling rows organized by genre
 - **Category Filter**: Switch between Movies, TV Shows, or All
 - **Genre Filter**: Filter by specific genres
 
-## Browsing Content
+### Browsing Content
 
 **Using Category Filters:**
 1. Tap the **Categories** dropdown at the top
@@ -54,9 +53,7 @@ The home screen is your main browsing hub:
 2. Select a genre (e.g., Action, Comedy, Drama)
 3. Content updates to show only that genre
 
-## Navigating Content Rows
-
-**How to browse:**
+### Navigating Content Rows
 - **Swipe left/right** on any genre row to see more content
 - Each card shows:
   - Movie/TV show poster
@@ -68,16 +65,16 @@ The home screen is your main browsing hub:
 
 ## Search Functionality
 
-**Accessing Search:**
+### Accessing Search
 1. Tap the **search icon** (🔍) in the top-right corner
 2. Type your search query in the search bar
 
-**Search Features:**
+### Search Features
 - Results appear in a grid layout
 - Tap any result to view details
 - Clear search to return to recommendations
 
-## Search Screen - When Logged In
+### Search Screen - When Logged In
 
 **Personalized Sections:**
 - **"Because You Watched"**: Similar content based on your viewing history
@@ -118,7 +115,9 @@ The home screen is your main browsing hub:
    - Runtime
    - Description
 
-## Creating an Account
+## User Accounts
+
+### Creating an Account
 
 **Why create an account?**
 - Save movies to Watch Later
@@ -135,7 +134,7 @@ The home screen is your main browsing hub:
    - Confirm password
 4. Tap **Sign Up**
 
-## Logging In
+### Logging In
 
 **To log in:**
 1. Tap the **person icon** (👤) in the top-right
@@ -144,9 +143,18 @@ The home screen is your main browsing hub:
 
 **You'll stay logged in** until you manually log out.
 
+### Logging Out
+
+**To log out:**
+1. Go to your **Profile** page
+2. Tap the **logout icon** (🚪) in the top-right
+3. Confirm logout
+
+**Note:** You'll lose access to personalized features until you log back in.
+
 ## Watch Lists
 
-**Two types of lists:**
+### Two Types of Lists
 
 1. **Watch Later**
    - Save content to watch later
@@ -156,12 +164,12 @@ The home screen is your main browsing hub:
    - Automatically tracks what you view
    - Used for personalized recommendations
 
+### Managing Lists
+
 **To add to lists:**
 - On any details screen, use the **Watch Later** or **Mark as Watched** buttons
 
-## Profile Page
-
-**Accessing your profile:**
+**To view your lists:**
 1. Tap the **person icon** (👤) when logged in
 2. View your:
    - **Watch Later** list
@@ -171,15 +179,6 @@ The home screen is your main browsing hub:
 - Browse your saved content
 - Tap any item to view details
 - Remove items from the details screen
-
-## Logging Out
-
-**To log out:**
-1. Go to your **Profile** page
-2. Tap the **logout icon** (🚪) in the top-right
-3. Confirm logout
-
-**Note:** You'll lose access to personalized features until you log back in.
 
 ## Tips & Tricks
 
@@ -191,7 +190,7 @@ The home screen is your main browsing hub:
 
 ## Troubleshooting
 
-**Common Issues:**
+### Common Issues
 
 **Content not loading?**
 - Check your internet connection
@@ -213,7 +212,7 @@ The home screen is your main browsing hub:
 - Contact the development team
 - Report issues through the app
 
-**Thank you for using Notflix!** 🎉
+**Thank you for using Notflix!**
 
 Enjoy discovering your next favorite movie or TV show!
 

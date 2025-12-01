@@ -1,26 +1,12 @@
 ---
-title: "Notflix Architecture Overview"
+title: "Architecture Overview"
 date: 2025-01-01
 draft: false
-weight: 1
 ---
 
 # Notflix Architecture Overview
 
-**Developer Guide & Technical Documentation**
-
-## Table of Contents
-
-1. **System Overview**
-2. **Technology Stack**
-3. **Architecture Patterns**
-4. **Project Structure**
-5. **Data Flow**
-6. **API Integration**
-7. **Database Design**
-8. **Key Components**
-9. **Development Setup**
-10. **Testing Strategy**
+Developer Guide & Technical Documentation
 
 ## System Overview
 
@@ -43,15 +29,15 @@ weight: 1
 
 ## Technology Stack
 
-**Frontend:**
+### Frontend
 - **Flutter** (Dart SDK 3.9.0+)
 - **Material Design** with custom Netflix-inspired theme
 
-**Backend Services:**
+### Backend Services
 - **The Movie Database (TMDB) API** - Content data
 - **PocketBase** - User authentication and watch lists
 
-**Key Dependencies:**
+### Key Dependencies
 - `http` - REST API calls
 - `pocketbase` - Backend database
 - `youtube_player_iframe` - Trailer playback
@@ -59,19 +45,17 @@ weight: 1
 
 ## Architecture Patterns
 
-**Patterns Used:**
+### MVC (Model-View-Controller)
+- **Models**: `Movie`, `TvShow`, `Episode`
+- **Views**: Screen widgets (`MovieList`, `Search`, `MovieDetail`)
+- **Controllers**: State management via `StatefulWidget`
 
-1. **MVC (Model-View-Controller)**
-   - Models: `Movie`, `TvShow`, `Episode`
-   - Views: Screen widgets (`MovieList`, `Search`, `MovieDetail`)
-   - Controllers: State management via `StatefulWidget`
+### Repository Pattern
+- `APIRunner` - API abstraction layer
+- `DbConnection` - Database abstraction layer
 
-2. **Repository Pattern**
-   - `APIRunner` - API abstraction layer
-   - `DbConnection` - Database abstraction layer
-
-3. **Widget Composition**
-   - Reusable components (`MovieCard`, `WatchListButtons`)
+### Widget Composition
+- Reusable components (`MovieCard`, `WatchListButtons`)
 
 ## Project Structure
 
@@ -97,7 +81,7 @@ lib/
 
 ## Data Models
 
-**Movie Model:**
+### Movie Model
 ```dart
 class Movie {
   int id;
@@ -110,15 +94,27 @@ class Movie {
 }
 ```
 
-**TvShow Model:**
-- Similar structure to Movie
-- Additional TV-specific fields
+### TvShow Model
+Similar structure to Movie with additional TV-specific fields.
 
-**Episode Model:**
-- Episode number, name, air date
-- Runtime, overview, still path
+### Episode Model
+Contains episode number, name, air date, runtime, overview, and still path.
 
-## API Integration - TMDB
+## API Integration
+
+### TMDB API
+**Base URL:** `https://api.themoviedb.org/3`
+
+**Key Endpoints:**
+- `/discover/movie` - Discover movies
+- `/discover/tv` - Discover TV shows
+- `/search/movie` - Search movies
+- `/movie/{id}/videos` - Movie trailers
+- `/tv/{id}/videos` - TV show trailers
+- `/tv/{id}` - TV show details
+- `/tv/{id}/season/{season}` - Season episodes
+- `/genre/movie/list` - Movie genres
+- `/genre/tv/list` - TV genres
 
 **APIRunner Class Responsibilities:**
 - Authentication with Bearer token
@@ -134,43 +130,26 @@ class Movie {
 - `getTvShowDetails()` - TV show metadata
 - `getTvSeasonEpisodes()` - Episode data
 
-## API Endpoints Used
+## Database Design
 
-**TMDB API Endpoints:**
-- `/discover/movie` - Discover movies
-- `/discover/tv` - Discover TV shows
-- `/search/movie` - Search movies
-- `/movie/{id}/videos` - Movie trailers
-- `/tv/{id}/videos` - TV show trailers
-- `/tv/{id}` - TV show details
-- `/tv/{id}/season/{season}` - Season episodes
-- `/genre/movie/list` - Movie genres
-- `/genre/tv/list` - TV genres
+### PocketBase Collections
 
-**Base URL:** `https://api.themoviedb.org/3`
+**users**
+- `username` (String)
+- `email` (String, unique)
+- `password` (String, hashed)
 
-## Database Design - PocketBase
-
-**Collections:**
-
-1. **users**
-   - `username` (String)
-   - `email` (String, unique)
-   - `password` (String, hashed)
-
-2. **user_watch_lists**
-   - `user` (Relation to users)
-   - `recently_watched` (JSON object)
-   - `watch_later` (JSON object)
+**user_watch_lists**
+- `user` (Relation to users)
+- `recently_watched` (JSON object)
+- `watch_later` (JSON object)
 
 **Storage Format:**
 - Watch lists stored as JSON maps
 - Key: Show ID (String)
 - Value: Show data (Map)
 
-## Database Operations
-
-**DbConnection Class Methods:**
+### Database Operations
 
 **Authentication:**
 - `logInUser()` - User login
@@ -185,9 +164,9 @@ class Movie {
 - `getRecentlyWatchedShows()` - Retrieve watched
 - `checkShowInWatchList()` - Check if in list
 
-## Key Components - Home Screen
+## Key Components
 
-**MovieList Widget:**
+### Home Screen (MovieList Widget)
 - Main entry point
 - Manages state for categories/genres
 - Fetches and displays content
@@ -200,9 +179,7 @@ class Movie {
 - Dynamic content loading
 - Loading states
 
-## Key Components - Search Screen
-
-**Search Widget:**
+### Search Screen (Search Widget)
 - Real-time search functionality
 - Grid layout for results
 - Personalized recommendations (when logged in)
@@ -215,9 +192,7 @@ class Movie {
 - Results displayed in grid
 - Clear search functionality
 
-## Key Components - Details Screen
-
-**MovieDetail Widget:**
+### Details Screen (MovieDetail Widget)
 - Displays movie/TV show information
 - YouTube trailer integration
 - Episode list for TV shows
@@ -230,8 +205,9 @@ class Movie {
 - Trailer playback
 - Episode browsing
 
-## Data Flow - Content Browsing
+## Data Flow
 
+### Content Browsing Flow
 ```
 User Action
     ↓
@@ -250,8 +226,7 @@ Widget State Update
 UI Rendering
 ```
 
-## Data Flow - User Actions
-
+### User Authentication Flow
 ```
 User Login
     ↓
@@ -295,40 +270,21 @@ Personalized Features Enabled
 - Button theme
 - Card theme
 
-## Error Handling
-
-**API Errors:**
-- HTTP status code checking
-- Try-catch blocks
-- Null safety handling
-- Default values for missing data
-
-**Database Errors:**
-- Connection error handling
-- Authentication error messages
-- User-friendly error display
-
-**UI Error States:**
-- Loading indicators
-- Error messages
-- Fallback images
-
 ## Development Setup
 
-**Prerequisites:**
+### Prerequisites
 - Flutter SDK 3.9.0+
 - Dart SDK
 - PocketBase server (local)
 
-**Steps:**
+### Setup Steps
 1. Clone repository
 2. Run `flutter pub get`
 3. Start PocketBase: `cd server/pocketbase && .\start-pocketbase.ps1`
 4. Configure API key in `lib/util/api.dart`
 5. Run `flutter run`
 
-## PocketBase Setup
-
+### PocketBase Setup
 **Local Development:**
 - PocketBase binary in `server/pocketbase/`
 - Start script: `start-pocketbase.ps1`
@@ -353,17 +309,23 @@ Personalized Features Enabled
 - Widget rendering (`movie_card_test.dart`)
 - API integration (mocked)
 
-## API Key Management
+## Error Handling
 
-**Current Implementation:**
-- API key stored in `lib/util/api.dart`
-- **Security Note:** Should be moved to environment variables
-- Consider using `flutter_dotenv` package
+**API Errors:**
+- HTTP status code checking
+- Try-catch blocks
+- Null safety handling
+- Default values for missing data
 
-**Best Practices:**
-- Never commit API keys to version control
-- Use environment-specific keys
-- Rotate keys regularly
+**Database Errors:**
+- Connection error handling
+- Authentication error messages
+- User-friendly error display
+
+**UI Error States:**
+- Loading indicators
+- Error messages
+- Fallback images
 
 ## Image Loading
 
@@ -391,45 +353,6 @@ Personalized Features Enabled
 - Optimize list rendering
 - Consider state management library
 
-## Future Enhancements
-
-**Potential Improvements:**
-1. State management (Provider/Riverpod/Bloc)
-2. Offline caching
-3. Advanced filtering
-4. User ratings and reviews
-5. Social features
-6. Push notifications
-7. Better error handling
-8. Analytics integration
-
-## Code Organization Best Practices
-
-**Current Structure:**
-- Separation of concerns (models, views, utils)
-- Reusable widgets
-- Clear naming conventions
-
-**Recommendations:**
-- Consider feature-based structure
-- Extract constants to separate files
-- Create service layer for business logic
-- Implement dependency injection
-
-## Deployment Considerations
-
-**Build Targets:**
-- Android: APK/AAB
-- iOS: IPA
-- Web: Static hosting
-- Desktop: Platform-specific executables
-
-**Environment Configuration:**
-- Production API keys
-- Production PocketBase instance
-- Error tracking (Sentry, Firebase Crashlytics)
-- Analytics integration
-
 ## Security Considerations
 
 **Current Security:**
@@ -442,53 +365,17 @@ Personalized Features Enabled
 - Add input validation
 - Secure storage for sensitive data
 - Regular security audits
-
-## Documentation Standards
-
-**Code Documentation:**
-- Inline comments for complex logic
-- Class and method documentation
-- README files for setup
-
-**Architecture Documentation:**
-- This presentation
-- User manual
-- API documentation
-- Database schema
-
-## Contributing Guidelines
-
-**Development Workflow:**
-1. Create feature branch
-2. Write tests
-3. Implement feature
-4. Submit pull request
-5. Code review required
-
-**Code Style:**
-- Follow Dart style guide
-- Use `flutter analyze`
-- Run tests before committing
+- Move API keys to environment variables
 
 ## Resources & References
 
 **Documentation:**
-- Flutter: https://flutter.dev/docs
-- TMDB API: https://developers.themoviedb.org
-- PocketBase: https://pocketbase.io/docs
+- [Flutter Documentation](https://flutter.dev/docs)
+- [TMDB API Documentation](https://developers.themoviedb.org)
+- [PocketBase Documentation](https://pocketbase.io/docs)
 
 **Project Files:**
 - `README.md` - Project overview
 - `TEAM_RULES.md` - Team guidelines
 - `pubspec.yaml` - Dependencies
-
-## Questions & Support
-
-**For Developers:**
-- Review code comments
-- Check test files for examples
-- Consult team documentation
-- Reach out to team members
-
-**Thank you for contributing to Notflix!** 🚀
 

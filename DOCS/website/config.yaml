@@ -25,7 +25,7 @@ params:
   # Home page settings
   homeInfoParams:
     Title: 'Notflix Documentation'
-    Content: 'Welcome to the Notflix documentation site. Browse architecture guides, user tutorials, progress reports, and more.'
+    Content: 'Welcome to the Notflix documentation site. Browse architecture guides and user tutorials.'
   
   # Social links
   socialIcons:
@@ -51,16 +51,6 @@ menu:
       url: /docs/user-manual/
       parent: docs
       weight: 22
-    - identifier: progress
-      name: Progress
-      url: /docs/progress/
-      parent: docs
-      weight: 23
-    - identifier: reports
-      name: Reports
-      url: /docs/reports/
-      parent: docs
-      weight: 24
 
 markup:
   highlight:
