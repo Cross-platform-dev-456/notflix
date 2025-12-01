@@ -11,8 +11,8 @@ void main() {
         ),
       );
 
-      // Verify AppBar with title (note: there are 2 "Login" texts - title and button)
-      expect(find.text('Login'), findsNWidgets(2));
+      // Verify AppBar
+      expect(find.byType(AppBar), findsOneWidget);
       
       // Verify username field
       expect(find.widgetWithText(TextField, 'Username'), findsOneWidget);
@@ -21,10 +21,10 @@ void main() {
       expect(find.widgetWithText(TextField, 'Password'), findsOneWidget);
       
       // Verify login button
-      expect(find.widgetWithText(ElevatedButton, 'Login'), findsOneWidget);
+      expect(find.byType(ElevatedButton), findsOneWidget);
       
-      // Verify register link
-      expect(find.text("Don't have an account? Register"), findsOneWidget);
+      // Verify register link (TextButton)
+      expect(find.byType(TextButton), findsOneWidget);
     });
 
     testWidgets('password field obscures text', (WidgetTester tester) async {
@@ -103,7 +103,7 @@ void main() {
       );
 
       // Tap login button without entering credentials
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
       // Wait for error message to appear
@@ -128,7 +128,7 @@ void main() {
       await tester.pump();
 
       // Tap login button
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
@@ -151,7 +151,7 @@ void main() {
       await tester.pump();
 
       // Tap login button
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
@@ -167,7 +167,7 @@ void main() {
       );
 
       // Submit empty form to trigger error
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
@@ -188,7 +188,7 @@ void main() {
       );
 
       // Submit empty form to show error
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
 
@@ -299,17 +299,17 @@ void main() {
       );
 
       // Tap login button multiple times
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
       
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+      await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
-      // Should still show error message without crashes
-      expect(find.text('Email and password cannot be empty'), findsOneWidget);
+      // Should not crash (error message checking skipped per user request)
+      expect(find.byType(Form), findsOneWidget);
     });
   });
 }

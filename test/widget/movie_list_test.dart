@@ -2,21 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:notflix/view/movie_list.dart';
 
-// NOTE: MovieList makes API calls in initState(), so tests will fail without mocking.
-// These tests are SKIPPED until MovieList is refactored for dependency injection.
+// NOTE: MovieList makes API calls in initState(). These tests focus on UI elements
+// that can be tested without waiting for API calls to complete, primarily the
+// loading state and initial UI structure.
 
 void main() {
-  group('MovieList Widget (REQUIRES REFACTORING)', () {
-    testWidgets('README: MovieList needs refactoring', (WidgetTester tester) async {
-      // This test documents that MovieList needs refactoring
-      expect(true, true, reason: 'MovieList makes API calls in initState - needs dependency injection');
-    });
-  }, skip: 'MovieList makes API calls in initState - needs refactoring for dependency injection');
-
-  return; // Exit early to prevent API call tests
-  
-  // Original tests below - kept for reference
-  group('MovieList Widget Loading State (ORIGINAL - SKIPPED)', () {
+  group('MovieList Widget Loading State', () {
     testWidgets('shows loading indicator initially', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
@@ -24,7 +15,7 @@ void main() {
         ),
       );
 
-      // Should show loading indicator
+      // Should show loading indicator immediately
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
       
       // Should have AppBar with title
@@ -108,19 +99,79 @@ void main() {
     });
   });
 
-  group('MovieList Helper Widgets', () {
-    testWidgets('categoriesButton widget renders', (WidgetTester tester) async {
-      // Note: This test would require extracting categoriesButton as a separate widget
-      // or refactoring MovieList to accept initial loading state
-      
-      // For now, we test that the loading state works
+  group('MovieList AppBar Actions', () {
+    testWidgets('has search icon button', (WidgetTester tester) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: MovieList(),
         ),
       );
 
+      // Initially shows loading, but AppBar should be present
+      expect(find.byType(AppBar), findsOneWidget);
+      
+      // Search icon should be in AppBar actions
+      // Note: Actions are rendered even during loading
+      expect(find.byIcon(Icons.search), findsOneWidget);
+    });
+
+    testWidgets('has settings icon button', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MovieList(),
+        ),
+      );
+
+      // Settings icon should be present
+      expect(find.byIcon(Icons.settings), findsOneWidget);
+    });
+
+    testWidgets('has person/profile icon button', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MovieList(),
+        ),
+      );
+
+      // Person icon should be present
+      expect(find.byIcon(Icons.person), findsOneWidget);
+    });
+
+    testWidgets('search button is tappable', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MovieList(),
+        ),
+      );
+
+      // Wait a bit for initial render
+      await tester.pump(const Duration(milliseconds: 100));
+
+      // Tap search button (should not crash even if API is loading)
+      await tester.tap(find.byIcon(Icons.search));
+      await tester.pump();
+    });
+  });
+
+  group('MovieList Helper Widgets', () {
+    testWidgets('has proper scaffold structure', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MovieList(),
+        ),
+      );
+
+      // Verify Scaffold exists
       expect(find.byType(Scaffold), findsOneWidget);
+      
+      // Verify AppBar in Scaffold
+      expect(
+        find.descendant(
+          of: find.byType(Scaffold),
+          matching: find.byType(AppBar),
+        ),
+        findsOneWidget,
+      );
     });
   });
 
@@ -155,6 +206,26 @@ void main() {
       await tester.pump(const Duration(milliseconds: 100));
 
       // Should still be valid
+      expect(find.byType(Scaffold), findsOneWidget);
+    });
+
+    testWidgets('loading state persists during async operations', (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MovieList(),
+        ),
+      );
+
+      // Initially loading
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+      // Pump several frames (simulating async API calls)
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 50));
+
+      // Should still show loading or have transitioned to content
+      // (depending on how fast API responds, but widget should be stable)
       expect(find.byType(Scaffold), findsOneWidget);
     });
   });
