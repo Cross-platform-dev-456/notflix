@@ -148,14 +148,14 @@ class _MovieListState extends State<MovieList> {
           ),
 
           SliverToBoxAdapter(
-            child: movieGroup(moviesCount: moviesCount, movieGroup: movies)
+            child: movieGroup(moviesCount: moviesCount, movieGroup: movies, category: _typeValue, movieGenres: movieGenres, tvGenres: tvGenres)
           ),
 
           // Builds movies and shows based on genres
           SliverList.builder(
             itemCount: moviesTvShows?.length,
             itemBuilder: (BuildContext context, int index) {
-              return movieGroup(moviesCount: moviesCount, movieGroup: moviesTvShows?[index]);
+              return movieGroup(moviesCount: moviesCount, movieGroup: moviesTvShows?[index], category: _typeValue, movieGenres: movieGenres, tvGenres: tvGenres);
             },
           ),
         ]),
@@ -326,12 +326,49 @@ Widget movieTitle({required title}) {
   );
 }
 
+// Helper function to get genre name from ID
+String getGenreName(dynamic genreValue, String? category, List<List> movieGenres, List<List> tvGenres) {
+  // If it's already a string (genre name), return it
+  if (genreValue is String) {
+    return genreValue;
+  }
+  
+  // If it's a number (genre ID), look it up in the genre lists
+  if (genreValue is int || genreValue is String) {
+    String genreId = genreValue.toString();
+    
+    // Check movie genres
+    for (var genre in movieGenres) {
+      if (genre[0].toString() == genreId) {
+        return genre[1] as String;
+      }
+    }
+    
+    // Check TV genres
+    for (var genre in tvGenres) {
+      if (genre[0].toString() == genreId) {
+        return genre[1] as String;
+      }
+    }
+  }
+  
+  // Fallback: return the value as string
+  return genreValue.toString();
+}
+
 // widget for making a horizontally scrollable movie list
-Widget movieGroup({required moviesCount, required movieGroup}) {
+Widget movieGroup({required moviesCount, required movieGroup, String? category, required List<List> movieGenres, required List<List> tvGenres}) {
   final String iconBase = 'https://image.tmdb.org/t/p/w500/';
   final String defaultImage = 'https://images.freeimages.com/images/large-previews/5eb/movie-clapboard-1184339.jpg';
   
   NetworkImage image;
+  
+  // Get the genre label - convert ID to name if needed
+  String genreLabel = 'Upcoming';
+  if (movieGroup != null && movieGroup.isNotEmpty && movieGroup[0].genres.isNotEmpty) {
+    dynamic lastGenre = movieGroup[0].genres[movieGroup[0].genres.length - 1];
+    genreLabel = getGenreName(lastGenre, category, movieGenres, tvGenres);
+  }
 
   return SizedBox(
     height: 400, 
@@ -340,7 +377,7 @@ Widget movieGroup({required moviesCount, required movieGroup}) {
       children: <Widget>[
         Padding(
           padding: const EdgeInsets.all(16),
-          child: Text('${movieGroup[0].genres[movieGroup[0].genres.length-1]}', style: TextStyle(
+          child: Text(genreLabel, style: TextStyle(
             fontSize: 18,
             )
           )
