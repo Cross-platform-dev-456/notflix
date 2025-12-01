@@ -44,6 +44,48 @@ class DbConnection {
     return loggedIn;
   }
 
+  // Create a new user with username, email, and password
+  Future<Map<String, dynamic>> createUser({
+    required String username,
+    required String email,
+    required String password,
+    required String passwordConfirm,
+  }) async {
+    try {
+      final record = await pb.collection('users').create(body: {
+        'username': username,
+        'email': email,
+        'password': password,
+        'passwordConfirm': passwordConfirm,
+      });
+      
+      print("User created successfully with ID: ${record.id}");
+      return {
+        'success': true,
+        'userId': record.id,
+        'message': 'User created successfully',
+      };
+    } catch (e) {
+      print("Error creating user: $e");
+      String errorMessage = 'Failed to create user';
+      
+      // Parse specific error messages from PocketBase
+      if (e.toString().contains('email')) {
+        errorMessage = 'Email is already in use';
+      } else if (e.toString().contains('username')) {
+        errorMessage = 'Username is already taken';
+      } else if (e.toString().contains('password')) {
+        errorMessage = 'Password does not meet requirements';
+      }
+      
+      return {
+        'success': false,
+        'message': errorMessage,
+        'error': e.toString(),
+      };
+    }
+  }
+
   void logoutUser() { 
     try {
       pb.authStore.clear();
@@ -242,94 +284,9 @@ class DbConnection {
     }
   }
 
-}
-/*
-  Future<Db> openDb() async {
 
-    var db = Db(dbString);
-
-    await db.open();
-
-    return db;
-  }
-
-  /*  
-    The action that is desired should be sent as a lambda function, for example findOne() should be passed
-  */
-  Future<E> _performDatabaseOperation<E>(
-    String collectionName,
-    Future<E> Function(DbCollection) action, 
-  ) async {
-      late Db db;
-    try{
-      db = await openDb();
-
-      var collection = db.collection(collectionName);
-
-      return await action(collection);
-
-    } catch(lateInitializationError){
-      rethrow;
-    } finally {
-      try{ 
-        db.close();
-      } catch(lateInitializationError){
-        // TODO: Something here
-      }
-    }
-  }
-
-  Future<Map<String, dynamic>?> getUserInfo(String userId) async {
-
-    return await _performDatabaseOperation(
-      'user', 
-      (collection) => collection.findOne(
-        where
-        .eq('id',userId)
-      )
-    );
-  }
-
-  Future<Map<String, dynamic>?> getRecentlyWatched(String userId) async {
-
-    return await _performDatabaseOperation(
-      'users',
-     (collection) => collection.findOne(
-        where
-        .eq("id", userId)
-        .fields(['recently_watched'])
-      )
-    );
-  }
-
-  Future<Map<String, dynamic>?> getWatchList(String userId) async {
-
-    return await _performDatabaseOperation(
-      'users',
-      (collection) => collection.findOne(
-        where
-        .eq('id', userId)
-        .fields(['watchlist'])
-      )
-    );
-  }
-
-  Future<void> insertUserTest() async {
-
-    String collection = 'user';
-
-    var insertReturn = await _performDatabaseOperation(
-      collection, 
-      (collection) => collection.insertOne({
-        'username': 'Joe',
-        'watchlist': [],
-        'recently_watched': [],
-      })
-    );
-
-    print(insertReturn);
-
-  }
 
 }
-*/
+
+
+
