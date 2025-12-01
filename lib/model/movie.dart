@@ -21,7 +21,9 @@ class Movie {
   Movie.fromJson(Map<String, dynamic> parsedJson) {
     id = parsedJson['id'] as int;
     title = parsedJson['title'] as String? ?? '';
-    voteAverage = (parsedJson['vote_average'] as double?) ?? 0.0;
+    voteAverage = (parsedJson['vote_average'] is int) 
+        ? (parsedJson['vote_average'] as int).toDouble() 
+        : (parsedJson['vote_average'] as double?) ?? 0.0;
     releaseDate = parsedJson['release_date'] as String? ?? '';
     overview = parsedJson['overview'] as String? ?? '';
     posterPath = parsedJson['poster_path'] as String? ?? '';
