@@ -227,6 +227,35 @@ class _MovieDetailState extends State<MovieDetail> {
                     ),
                   ),
 
+                  // Watch List Buttons
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: WatchListButtons(
+                      showId: isTvShow 
+                          ? (widget.item as TvShow).id 
+                          : (widget.item as Movie).id,
+                      showTitle: getTitle(),
+                      showPosterPath: getPosterPath(),
+                      showData: {
+                        'id': isTvShow 
+                            ? (widget.item as TvShow).id 
+                            : (widget.item as Movie).id,
+                        'title': getTitle(),
+                        'poster_path': getPosterPath(),
+                        'vote_average': isTvShow 
+                            ? (widget.item as TvShow).voteAverage 
+                            : (widget.item as Movie).voteAverage,
+                        'release_date': isTvShow 
+                            ? (widget.item as TvShow).releaseDate 
+                            : (widget.item as Movie).releaseDate,
+                        'overview': getOverview(),
+                        'genre_ids': isTvShow 
+                            ? (widget.item as TvShow).genres 
+                            : (widget.item as Movie).genres,
+                      },
+                    ),
+                  ),
+
                   // TV Show Episodes Section
                   if (isTvShow && seasons.isNotEmpty) ...[
                     const Divider(),
