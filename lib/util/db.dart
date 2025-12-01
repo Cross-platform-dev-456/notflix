@@ -60,6 +60,20 @@ class DbConnection {
       });
       
       print("User created successfully with ID: ${record.id}");
+      
+      // Create a new watch list for the user
+      try {
+        await pb.collection('user_watch_lists').create(body: {
+          'field': record.id,
+          'recently_watched': {},
+          'watch_later': {},
+        });
+        print("Watch list created for user ${record.id}");
+      } catch (e) {
+        print("Error creating watch list: $e");
+        // Continue even if watch list creation fails
+      }
+      
       return {
         'success': true,
         'userId': record.id,
