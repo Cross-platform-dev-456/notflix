@@ -21,7 +21,9 @@ class TvShow {
   TvShow.fromJson(Map<String, dynamic> parsedJson) {
     id = parsedJson['id'] as int;
     title = parsedJson['name'] as String? ?? '';
-    voteAverage = (parsedJson['vote_average'] as double?) ?? 0.0;
+    voteAverage = (parsedJson['vote_average'] is int) 
+        ? (parsedJson['vote_average'] as int).toDouble() 
+        : (parsedJson['vote_average'] as double?) ?? 0.0;
     releaseDate = parsedJson['first_air_date'] as String? ?? '';
     overview = parsedJson['overview'] as String? ?? '';
     posterPath = parsedJson['backdrop_path'] as String? ?? '';

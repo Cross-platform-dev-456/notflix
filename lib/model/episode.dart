@@ -29,7 +29,9 @@ class Episode {
     seasonNumber = parsedJson['season_number'] as int? ?? 0;
     airDate = parsedJson['air_date'] as String? ?? '';
     stillPath = parsedJson['still_path'] as String?;
-    voteAverage = (parsedJson['vote_average'] as double?) ?? 0.0;
+    voteAverage = (parsedJson['vote_average'] is int) 
+        ? (parsedJson['vote_average'] as int).toDouble() 
+        : (parsedJson['vote_average'] as double?) ?? 0.0;
     runtime = parsedJson['runtime'] as int? ?? 0;
   }
 }
