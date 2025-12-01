@@ -25,7 +25,7 @@ migrate((app) => {
         "id": "relation1542800728",
         "maxSelect": 1,
         "minSelect": 0,
-        "name": "field",
+        "name": "user",
         "presentable": false,
         "required": false,
         "system": false,

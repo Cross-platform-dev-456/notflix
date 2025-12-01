@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:notflix/model/movie.dart';
 import 'package:notflix/util/api.dart';
+import 'package:notflix/view/widgets/watch_list_buttons.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 class MovieDetail extends StatefulWidget {
@@ -77,8 +78,22 @@ class _MovieDetailState extends State<MovieDetail> {
                         : Image.network(posterUrl),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
                     child: Text(widget.movie.overview),
+                  ),
+                  WatchListButtons(
+                    showId: widget.movie.id,
+                    showTitle: widget.movie.title,
+                    showPosterPath: widget.movie.posterPath,
+                    showData: {
+                      'id': widget.movie.id,
+                      'title': widget.movie.title,
+                      'poster_path': widget.movie.posterPath,
+                      'vote_average': widget.movie.voteAverage,
+                      'release_date': widget.movie.releaseDate,
+                      'overview': widget.movie.overview,
+                      'genre_ids': widget.movie.genres,
+                    },
                   ),
                 ],
               ),

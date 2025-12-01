@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:notflix/util/api.dart';
+import 'package:notflix/model/movie.dart';
 import 'movie_detail.dart';
 import 'package:notflix/util/db.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'user_page/log_in.dart';
+import 'user_page/profile.dart';
 
 // Reusable movie card widget for consistent styling
 class MovieCard extends StatelessWidget {
@@ -112,8 +115,19 @@ class _SearchState extends State<Search> {
 
   int? moviesCount;
   List? movies;
+  
+  int? similarMoviesCount;
+  List? similarMovies;
+  String? basedOnMovieTitle;
+  
+  int? forYouCount;
+  List? forYouMovies;
+  
+  int? becauseYouWatchedCount;
+  List? becauseYouWatchedMovies;
 
   late bool isSearching;
+  late bool isLoggedIn;
 
   int? searchCount;
   List? searchResults;
@@ -133,7 +147,9 @@ class _SearchState extends State<Search> {
   @override
   void initState() {
     helper = APIRunner();
+    db = DbConnection();
     isSearching = false;
+    isLoggedIn = db?.checkUserLogStatus() ?? false;
     initialize();
     super.initState();
   }
@@ -171,12 +187,27 @@ class _SearchState extends State<Search> {
           ),
           actions: <Widget>[
             IconButton(
-              icon: Icon(Icons.settings),
-              onPressed: () async => await testDb(),
-            ),
-            IconButton(
               icon: Icon(Icons.person),
-              onPressed: () async => await testDb(),
+              onPressed: () {
+                if (isLoggedIn) {
+                  // Navigate to profile page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Profile()),
+                  );
+                } else {
+                  // Navigate to login page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LogIn()),
+                  ).then((_) {
+                    // Refresh login status when returning from login page
+                    setState(() {
+                      isLoggedIn = db?.checkUserLogStatus() ?? false;
+                    });
+                  });
+                }
+              },
             )
           ],
         ),
@@ -189,47 +220,63 @@ class _SearchState extends State<Search> {
     return ListView(
       scrollDirection: Axis.vertical,
       children: <Widget>[
-        Container(
-          // For You
-          margin: EdgeInsets.all(20.0),
-          child: Column(
-            spacing: 5.0,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(
-                  left: 30.0,
-                  top: 5.0,
-                  bottom: 5.0,
+        // Only show personalized sections if logged in
+        if (isLoggedIn) ...[
+          Container(
+            // Because You Watched - Show Similar Movies
+            margin: EdgeInsets.all(20.0),
+            child: Column(
+              spacing: 5.0,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(
+                    left: 30.0,
+                    top: 5.0,
+                    bottom: 5.0,
+                  ),
+                  child: Text(
+                    basedOnMovieTitle != null 
+                        ? 'Because You Watched "$basedOnMovieTitle"'
+                        : 'Because You Watched',
+                    textScaler: TextScaler.linear(1.2),
+                  ),
                 ),
-                child: Text('For You', textScaler: TextScaler.linear(1.2)),
-              ),
-              CarouselSlider(
-                options: CarouselOptions(
-                  height: 350,
-                  viewportFraction: 1.0,
-                  enableInfiniteScroll: false,
-                  padEnds: false,
-                ),
-                items: [1].map((i) {
-                  return ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    itemCount: (moviesCount == null) ? 0 : moviesCount,
-                    itemBuilder: (BuildContext context, int position) {
-                      return MovieCard(
-                        movie: movies?[position],
-                        iconBase: iconBase,
-                        defaultImage: defaultImage,
-                      );
-                    },
-                  );
-                }).toList(),
-              ),
-            ],
+                similarMovies == null || similarMovies!.isEmpty
+                    ? Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: Text(
+                          'Mark movies as watched to see personalized recommendations',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                      )
+                    : CarouselSlider(
+                        options: CarouselOptions(
+                          height: 350,
+                          viewportFraction: 1.0,
+                          enableInfiniteScroll: false,
+                          padEnds: false,
+                        ),
+                        items: [1].map((i) {
+                          return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            itemCount: similarMoviesCount ?? 0,
+                            itemBuilder: (BuildContext context, int position) {
+                              return MovieCard(
+                                movie: similarMovies?[position],
+                                iconBase: iconBase,
+                                defaultImage: defaultImage,
+                              );
+                            },
+                          );
+                        }).toList(),
+                      ),
+              ],
+            ),
           ),
-        ),
+        ],
+        // Always show Upcoming Movies
         Container(
-          // Because You Watched
           margin: EdgeInsets.all(20.0),
           child: Column(
             spacing: 5.0,
@@ -241,10 +288,7 @@ class _SearchState extends State<Search> {
                   top: 5.0,
                   bottom: 5.0,
                 ),
-                child: Text(
-                  'Because You Watched',
-                  textScaler: TextScaler.linear(1.2),
-                ),
+                child: Text('Upcoming Movies', textScaler: TextScaler.linear(1.2)),
               ),
               CarouselSlider(
                 options: CarouselOptions(
@@ -280,6 +324,138 @@ class _SearchState extends State<Search> {
       moviesCount = movies?.length;
       movies = movies;
     });
+    
+    // Load personalized content if user is logged in
+    if (isLoggedIn) {
+      await _loadPersonalizedContent();
+    }
+  }
+
+  Future<void> _loadPersonalizedContent() async {
+    final userId = pb.authStore.model?.id;
+    if (userId != null) {
+      final watchLaterData = await db!.getWatchLaterShows(userId);
+      final recentlyWatchedData = await db!.getRecentlyWatchedShows(userId);
+    
+      
+      // For You section - show watch later movies
+      if (watchLaterData.isNotEmpty) {
+        try {
+          forYouMovies = watchLaterData.map((data) {
+            print("For You data: $data");
+            return Movie.fromJson(data);
+          }).toList();
+          setState(() {
+            forYouCount = forYouMovies?.length;
+          });
+        } catch (e, stackTrace) {
+          print("Error creating For You movies: $e");
+          print("Stack trace: $stackTrace");
+        }
+      }
+      
+      // Because You Watched section - show recently watched movies
+      if (recentlyWatchedData.isNotEmpty) {
+        try {
+          becauseYouWatchedMovies = recentlyWatchedData.map((data) {
+            print("Processing recently watched movie: $data");
+            return Movie.fromJson(data);
+          }).toList();
+          setState(() {
+            becauseYouWatchedCount = becauseYouWatchedMovies?.length;
+          });
+          
+          // Similar Movies section - fetch similar movies based on recently watched
+          await _loadSimilarMovies();
+        } catch (e, stackTrace) {
+          print("Error creating Because You Watched movies: $e");
+          print("Stack trace: $stackTrace");
+        }
+      }
+      
+      // For You section - fetch similar movies based on watch later
+      if (watchLaterData.isNotEmpty && forYouMovies != null && forYouMovies!.isNotEmpty) {
+        await _loadSimilarMoviesForWatchLater();
+      }
+    }
+  }
+
+  Future<void> _loadSimilarMovies() async {
+    if (becauseYouWatchedMovies == null || becauseYouWatchedMovies!.isEmpty) {
+      return;
+    }
+    
+    List<Movie> allSimilarMovies = [];
+    
+    // Store the first movie title for display
+    basedOnMovieTitle = becauseYouWatchedMovies![0].title;
+    
+    // Fetch similar movies for each recently watched movie (limit to first 3 to avoid too many API calls)
+    int limit = becauseYouWatchedMovies!.length > 3 ? 3 : becauseYouWatchedMovies!.length;
+    
+    for (int i = 0; i < limit; i++) {
+      try {
+        final movieId = becauseYouWatchedMovies![i].id.toString();
+        final similarMoviesList = await helper?.getSimilar(movieId);
+        
+        if (similarMoviesList != null && similarMoviesList.isNotEmpty) {
+          // Take first 5 similar movies from each watched movie
+          int takeCount = similarMoviesList.length > 5 ? 5 : similarMoviesList.length;
+          allSimilarMovies.addAll(similarMoviesList.take(takeCount).cast<Movie>());
+        }
+      } catch (e) {
+        print("Error fetching similar movies for movie ${becauseYouWatchedMovies![i].id}: $e");
+      }
+    }
+    
+    // Remove duplicates by id
+    final seenIds = <int>{};
+    allSimilarMovies = allSimilarMovies.where((movie) => seenIds.add(movie.id)).toList();
+    
+    if (allSimilarMovies.isNotEmpty) {
+      setState(() {
+        similarMovies = allSimilarMovies;
+        similarMoviesCount = allSimilarMovies.length;
+      });
+    }
+  }
+
+  Future<void> _loadSimilarMoviesForWatchLater() async {
+    if (forYouMovies == null || forYouMovies!.isEmpty) {
+      return;
+    }
+    
+    List<Movie> watchLaterSimilarMovies = [];
+    
+    // Fetch similar movies for watch later list (limit to first 3)
+    int limit = forYouMovies!.length > 3 ? 3 : forYouMovies!.length;
+    
+    for (int i = 0; i < limit; i++) {
+      try {
+        final movieId = forYouMovies![i].id.toString();
+        final similarMoviesList = await helper?.getSimilar(movieId);
+        
+        if (similarMoviesList != null && similarMoviesList.isNotEmpty) {
+          // Take first 5 similar movies
+          int takeCount = similarMoviesList.length > 5 ? 5 : similarMoviesList.length;
+          watchLaterSimilarMovies.addAll(similarMoviesList.take(takeCount).cast<Movie>());
+        }
+      } catch (e) {
+        print("Error fetching similar movies for watch later movie ${forYouMovies![i].id}: $e");
+      }
+    }
+    
+    // Remove duplicates and merge with existing similar movies
+    if (watchLaterSimilarMovies.isNotEmpty) {
+      final allMovies = [...?similarMovies, ...watchLaterSimilarMovies];
+      final seenIds = <int>{};
+      final uniqueMovies = allMovies.where((movie) => seenIds.add(movie.id)).toList();
+      
+      setState(() {
+        similarMovies = uniqueMovies;
+        similarMoviesCount = uniqueMovies.length;
+      });
+    }
   }
 
   // TODO: Create a search by different attributes. I.e Genre, name, actor
@@ -327,15 +503,4 @@ class _SearchState extends State<Search> {
     });
   }
 
-  testDb() async {
-    try {
-      db = DbConnection();
-      final users = await db?.getUserList();
-      print("Got users: $users");
-      //await db?.insertUserTest();
-    } catch (e) {
-      print(e.toString());
-      print("Could not test db");
-    }
-  }
 }

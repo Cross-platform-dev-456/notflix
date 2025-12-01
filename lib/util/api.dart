@@ -18,7 +18,7 @@ class APIRunner {
   final String apiUpcoming = '/movie/upcoming?';
   final String apiTvUpcoming = '/tv/airing_today?';
 
-  // categorie is either 'Movies' or 'TV Shows'
+  // categories is either 'Movies' or 'TV Shows'
   // genres is being pushed from the movie_list page. Upcoming is being used as a 'default' value
   Future<List?> runAPI(API, categorie, genre) async {
     http.Response result = await http.get(
@@ -35,26 +35,28 @@ class APIRunner {
         late var movies = [];
         if(categorie == 'Movies') {
           movies = moviesMap.map((i) => Movie.fromJson(i)).toList();
-          if(genre != 'Upcoming') {
+          if(movies.isNotEmpty && genre != 'Upcoming' && genre != '') {
             genre = await getGenreByID(genre, 'Movies'); 
+            movies[0].genres.add('${await genre} Movies');
           }
-          movies[0].genres.add('${await genre} Movies');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
         else if(categorie == 'TV Shows') {
           movies = moviesMap.map((i) => TvShow.fromJson(i)).toList();
-          if(genre != 'Upcoming') {
+          if(movies.isNotEmpty && genre != 'Upcoming' && genre != '') {
             genre = await getGenreByID(genre, 'TV Shows'); 
+            movies[0].genres.add('${await genre} TV Shows');
           }
-          movies[0].genres.add('${await genre} TV Shows');
           print('Successfully parsed ${movies.length} movies');
           return movies;
         }
         print('Could not parse movies: $categorie');
         return [];
-      } catch (e) {
+      } catch (e, stackTrace) {
         print('Error parsing movies: $e');
+        print('Stack trace: $stackTrace');
+        print('API URL: $API');
         return <Movie>[]; // Return empty list on error
       }
     } else {

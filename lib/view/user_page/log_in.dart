@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:notflix/util/api.dart';
-import '../movie_detail.dart';
 import 'package:notflix/util/db.dart';
-import 'package:carousel_slider/carousel_slider.dart';
 
 class LogIn extends StatefulWidget {
   const LogIn({super.key});
@@ -79,6 +76,7 @@ class _LogInState extends State<LogIn> {
                 labelText: 'Username',
                 border: OutlineInputBorder(),
               ),
+              onSubmitted: (_) => _login(),
             ),
             SizedBox(height: 20),
             TextField(
@@ -88,17 +86,37 @@ class _LogInState extends State<LogIn> {
                 labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
+              onSubmitted: (_) => _login(),
             ),
             SizedBox(height: 20),
             if (errorMessage != null)
-              Padding(
-                padding: const EdgeInsets.only(bottom: 20),
-                child: Text(
-                  errorMessage!,
-                  style: TextStyle(
-                    color: Colors.red,
-                    fontSize: 14,
-                  ),
+              Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  border: Border.all(color: Colors.red.shade300, width: 1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade700,
+                      size: 24,
+                    ),
+                    SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        errorMessage!,
+                        style: TextStyle(
+                          color: Colors.red.shade900,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ElevatedButton(
