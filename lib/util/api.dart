@@ -219,34 +219,68 @@ class APIRunner {
     print('Failed to load trailer: ${response.statusCode}');
     return null;
   }
+  }
 
-    // Dead code?
-//   Future<String?> getTrailerKey(String movieId) async {
-//   final String videoAPI = '$urlBase/movie/$movieId/videos$urlLanguage';
-//   final response = await http.get(
-//     Uri.parse(videoAPI),
-//     headers: {
-//       'Authorization': 'Bearer $api_key',
-//       'Accept': 'application/json',
-//     },
-//   );
+  Future<String?> getTvTrailerKey(String tvId) async {
+    final String videoAPI = '$urlBase/tv/$tvId/videos$urlLanguage';
+    final response = await http.get(
+      Uri.parse(videoAPI),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
 
-//   if (response.statusCode == HttpStatus.ok) {
-//     final jsonResponse = json.decode(response.body);
-//     final videos = jsonResponse['results'] as List;
-//     if (videos.isEmpty) return null;
+    if (response.statusCode == HttpStatus.ok) {
+      final jsonResponse = json.decode(response.body);
+      final videos = jsonResponse['results'] as List;
+      if (videos.isEmpty) return null;
 
-//     final trailer = videos.firstWhere(
-//       (v) => v['site'] == 'YouTube' && v['type'] == 'Trailer',
-//       orElse: () => null,
-//     );
+      final trailer = videos.firstWhere(
+        (v) => v['site'] == 'YouTube' && v['type'] == 'Trailer',
+        orElse: () => null,
+      );
 
-//     return trailer?['key'];
-//   } else {
-//     print('Failed to load trailer: ${response.statusCode}');
-//     return null;
-//   }
-// }
+      return trailer?['key'];
+    } else {
+      print('Failed to load TV trailer: ${response.statusCode}');
+      return null;
+    }
+  }
 
-}
+  Future<Map<String, dynamic>?> getTvShowDetails(String tvId) async {
+    final String detailAPI = '$urlBase/tv/$tvId$urlLanguage';
+    final response = await http.get(
+      Uri.parse(detailAPI),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == HttpStatus.ok) {
+      return json.decode(response.body) as Map<String, dynamic>;
+    } else {
+      print('Failed to load TV show details: ${response.statusCode}');
+      return null;
+    }
+  }
+
+  Future<Map<String, dynamic>?> getTvSeasonEpisodes(String tvId, int seasonNumber) async {
+    final String seasonAPI = '$urlBase/tv/$tvId/season/$seasonNumber$urlLanguage';
+    final response = await http.get(
+      Uri.parse(seasonAPI),
+      headers: {
+        'Authorization': 'Bearer $api_key',
+        'Accept': 'application/json',
+      },
+    );
+
+    if (response.statusCode == HttpStatus.ok) {
+      return json.decode(response.body) as Map<String, dynamic>;
+    } else {
+      print('Failed to load season episodes: ${response.statusCode}');
+      return null;
+    }
+  }
 }
